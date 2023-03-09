@@ -1,5 +1,3 @@
-from time import sleep
-from perlin_noise import PerlinNoise
 import pygame
 import pygame_menu
 from pygame_menu import themes
@@ -7,49 +5,16 @@ import Terrains as terrains
 import MapColourer as MC
 import os
 from win32api import GetSystemMetrics
-import SaveMap as sm
 import numpy as np
 import RiversGenerator as rg
+import NoiseGenerator as ng
+import CityGeneration as cg
+
 
 # gdzie pokazywać na ekranie będą się okna
 Width = GetSystemMetrics(0)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % (Width/2-300, 100)
-
-
-def GenerateData(base_octave, base_frequency, depth):
-    octaves_tab = []
-    for i in range(3):
-        octaves_tab.append(PerlinNoise(octaves=base_octave*(pow(4, i))))
-
-    pic = []
-    for i in range(XPIX):
-        row = []
-        for j in range(YPIX):
-            noise_val = 0
-            for k in range(len(octaves_tab)):
-                noise_val += octaves_tab[k]([base_frequency *
-                                            i/XPIX, base_frequency*j/YPIX])
-            row.append(noise_val)
-        pic.append(row)
-    pic = pow(terrains.NormalizeData(pic, 0, 1), depth)
-    return pic
-
-
-def GenerateRiver(river_type, height_map, moisture_map):
-    rivers_map = (XPIX, YPIX)
-    rivers_map = np.zeros(rivers_map)
-    if river_type == "none":
-        return height_map
-    if river_type == "perlin":
-        rivers_map = GenerateData(2, 1, 2)
-        for i in range(XPIX):
-            for j in range(YPIX):
-                if rivers_map[i][j] >= 0.45 and rivers_map[i][j] <= 0.55 and height_map[i][j] >= 0.33:
-                    height_map[i][j] = 0.2
-    if river_type == "grad_desc":
-        height_map=rg.makeRiver(moisture_map,height_map)
-    return height_map
-
+           
 
 def GenerateColdMap(height_map, cold, cold_str):
     cold_map = (XPIX, YPIX)
@@ -66,17 +31,14 @@ def GenerateColdMap(height_map, cold, cold_str):
         cold_map = terrains.NormalizeData(height_map, 0, 0.4)
         for i in range(XPIX):
             for j in range(YPIX):
-                cold_map[i][j] = cold_map[i][j] + \
-                    cold_const-(j/XPIX)*(cold_const*0.8)
+                cold_map[i][j] = cold_map[i][j] + cold_const-(j/XPIX)*(cold_const*0.8)
     if cold == 'south_pole':
         cold_map = terrains.NormalizeData(height_map, 0, 0.4)
         for i in range(XPIX):
-            for j in range(YPIX):
-                cold_map[i][j] = cold_map[i][j] + \
-                    cold_const-(j/XPIX)*(cold_const*0.8)
+            for j in range(YPIX):        
+                cold_map[i][j] = cold_map[i][j] + cold_const-(j/XPIX)*(cold_const*0.8)
             cold_map[i][:] = cold_map[i][:][::-1]
-            print(cold_map)
-
+        
     return cold_map
 
 
@@ -86,27 +48,67 @@ def GenerateMap(height_map, moisture_map, cold_map):
     pygame.mixer.music.load(MUSIC)
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)
-    screen = pygame.display.set_mode((XPIX*3, YPIX*3))
-    pygame.display.set_caption("Proceduralnie wygenerowane miasto")
-    icon = pygame.image.load('Ikona.png')
+    base_size = (XPIX, YPIX)
+    current_size = (XPIX*9, YPIX*9)
+    screen = pygame.display.set_mode(current_size)
+    pygame.display.set_caption('Proceduralnie wygenerowane miasto')
+    icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
     pygame.display.set_icon(icon)
     MC.colorize(TERRAIN, height_map, moisture_map, cold_map, screen)
-
+    if CITY_TYPE == 'lsystem':
+        cg.LSystemCity(screen, height_map, base_size, current_size)
+    pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
+    screen = pygame.display.set_mode((450,450))
+    img = pygame.image.load('Procedural_City_Generation/Map.bmp')
+    screen.blit(img, (0, 0), (0, 0, 450, 450))
     pygame.display.update()
-    sm.Save("Map.bmp")
     running = True
+    x_offset = 0
+    y_offset = 0
+    
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.mixer.music.fadeout(300)
-                running = False
-                DisplayGUI()
+        event = pygame.event.poll()
+        pressed = pygame.key.get_pressed()
+        
+        if event.type == pygame.QUIT:
+            pygame.mixer.music.fadeout(300)
+            running = False
+            DisplayGUI()
+        if pressed[pygame.K_UP]:
+            if (y_offset < 0):
+                y_offset += 1
+                scrollY(screen, img, x_offset, y_offset)
+        elif pressed[pygame.K_DOWN]:
+            if (y_offset > -current_size[1]+450):
+                y_offset -= 1
+                scrollY(screen, img, x_offset, y_offset)
+        elif pressed[pygame.K_LEFT]:
+            if (x_offset < 0):
+                x_offset += 1
+                scrollX(screen, img, x_offset, y_offset)
+        elif pressed[pygame.K_RIGHT]:
+            if (x_offset > -current_size[0]+450):
+                x_offset -= 1
+                scrollX(screen, img, x_offset, y_offset)
+        pygame.display.update()
+        
+def scrollX(screenSurf, image, offsetX, offsetY):
+    width, height = image.get_size()
+    screenSurf.blit(image, (offsetX, offsetY))
+    if offsetX < 0:
+        screenSurf.blit(image, (width + offsetX, 0), (0, 0, -offsetX, height))
+        
+def scrollY(screenSurf, image, offsetX, offsetY):
+    width, height = image.get_size()
+    screenSurf.blit(image, (offsetX, offsetY))
+    if offsetY < 0:
+        screenSurf.blit(image, (0, height + offsetY), (0, 0, width, -offsetY))
 
 
 def DisplayGUI():
 
     # Ustwienia domyślne
-    global TERRAIN, RIVER, COLD, COLD_STR, XPIX, YPIX, FILENAME, MUSIC
+    global TERRAIN, RIVER, COLD, COLD_STR, XPIX, YPIX, FILENAME, MUSIC, CITY_TYPE
     TERRAIN = 'mountains'
     RIVER = 'none'
     COLD = 'none'
@@ -114,7 +116,8 @@ def DisplayGUI():
     COLD_STR = 'weak'
     FILENAME = 'Map.bmp'
     XPIX, YPIX = 50, 50
-
+    CITY_TYPE = 'none'
+    
     def set_file_name(filename):
         global FILENAME
         FILENAME = filename
@@ -138,10 +141,13 @@ def DisplayGUI():
     def set_cold_strenght(l, value):
         global COLD_STR
         COLD_STR = value
+        
+    def set_city_type(l, value):
+        global CITY_TYPE
+        CITY_TYPE = value
 
     def set_map_size(value):
         global XPIX, YPIX
-
         if 'x' in value:
             X, Y = value.split('x')
         else:
@@ -153,6 +159,11 @@ def DisplayGUI():
             XPIX = 50
             YPIX = 50
             return XPIX, YPIX
+        
+        elif int(X) < 50:
+            XPIX = 50
+        elif int(Y) < 50:
+            YPIX = 50
         else:
             XPIX = int(X)
             YPIX = int(Y)
@@ -162,24 +173,20 @@ def DisplayGUI():
 
     pygame.init()
     pygame.display.set_caption("Proceduralna generacja miasta v0.0.3")
-    icon = pygame.image.load('Ikona.png')
+    icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
     pygame.display.set_icon(icon)
-
-    surface = pygame.display.set_mode((600, 400))
-    mainmenu = pygame_menu.Menu(
-        'Main menu', 600, 400, theme=themes.THEME_SOLARIZED)
+    surface = pygame.display.set_mode((800, 500))
+    mainmenu = pygame_menu.Menu('Main menu', 800, 500, theme=themes.THEME_SOLARIZED)
     mainmenu.add.button('Start generation', start_generating)
     mainmenu.add.button('Change settings', setting_menu_options)
-    mainmenu.add.text_input(
-        'Save file as: ', default="Map.bmp", maxchar=20, onchange=set_file_name)
+    mainmenu.add.text_input('Save file as: ', default="Map.bmp", maxchar=20, onchange=set_file_name)
     mainmenu.add.button('Quit', pygame_menu.events.EXIT)
 
     setting_values = pygame_menu.Menu(
-        'Select your desired settings', 600, 400, theme=themes.THEME_BLUE)
+        'Select your desired settings', 800, 500, theme=themes.THEME_BLUE)
     setting_values.add.selector('Terrain :',
                                 [('Switzerland', 'mountains'), ('Great Plains', 'plains'),
-                                 ('Lone Island', 'island'), ("Pirate's heaven",
-                                                             'many_islands'),
+                                 ('Lone Island', 'island'), ("Pirate's heaven",'many_islands'),
                                  ('Amazon Forest', 'big_forest'), ('Sahara', 'desert'),
                                  ('Louisiana', 'swamp')], onchange=set_terrain)
     setting_values.add.text_input(
@@ -193,16 +200,15 @@ def DisplayGUI():
 
     setting_values.add.selector('Cold power :',
                                 [('Weak', 'weak'), ('Medium', 'medium'), ('Strong', 'strong')], onchange=set_cold_strenght)
+    setting_values.add.selector('City Type :',
+                                [('None', 'none'), ('L-systems', 'lsystem'), ('Grid', 'grid'), ('Voronoi', 'voronoi')], onchange=set_city_type)
 
-    # Na przyszłość, do zaznaczania co chcemy/niechcemy
-    setting_options = pygame_menu.Menu(
-        'Select your desired settings', 600, 400, theme=themes.THEME_BLUE)
 
     loading = pygame_menu.Menu(
-        'Generating...', 600, 400, theme=themes.THEME_DARK)
+        'Generating...', 800, 500, theme=themes.THEME_DARK)
     loading.add.progress_bar(
         "Progress", progressbar_id="1", default=0, width=200)
-
+    
     arrow = pygame_menu.widgets.LeftArrowSelection(arrow_size=(10, 15))
 
     update_loading = pygame.USEREVENT + 0
@@ -218,42 +224,36 @@ def DisplayGUI():
                     progress.set_value(0)
 
                     # Wczytywanie i generowanie danych
+                    height_map = ng.GenerateData(2, 1, 1.5, XPIX, YPIX)
+                    moisture_map = ng.GenerateData(2, 0.5, 1, XPIX, YPIX)
+                    cold_map = GenerateColdMap(height_map, COLD, COLD_STR)
 
                     # Generuję mapę wysokości, maskę wilgotności i zimna
-                    height_map = GenerateData(2, 1, 1.5)
-                    moisture_map = GenerateData(2, 0.5, 1)
-                    cold_map = GenerateColdMap(height_map, COLD, COLD_STR)
                     if TERRAIN == 'mountains':
                         height_map = terrains.MakeMountains(height_map)
-                        MUSIC = "Music/mountains.mp3"
+                        MUSIC = "Procedural_City_Generation/Music/mountains.mp3"
                     if TERRAIN == 'plains':
                         height_map = terrains.MakeLowlands(height_map)
-                        MUSIC = 'Music/plains.mp3'
+                        MUSIC = 'Procedural_City_Generation/Music/plains.mp3'
                     if TERRAIN == 'island':
-                        height_map = terrains.MakeIsland(
-                            height_map, XPIX, YPIX)
-                        MUSIC = 'Music/island.mp3'
+                        height_map = terrains.MakeIsland(height_map, XPIX, YPIX)
+                        MUSIC = 'Procedural_City_Generation/Music/island.mp3'
                     if TERRAIN == 'many_islands':
                         height_map = terrains.MakeIslands(height_map)
-                        MUSIC = "Music/many_islands.mp3"
+                        MUSIC = "Procedural_City_Generation/Music/many_islands.mp3"
                     if TERRAIN == 'big_forest':
-                        height_map, moisture_map = terrains.MakeBigForest(
-                            height_map, moisture_map)
-                        MUSIC = "Music/big_forest.mp3"
+                        height_map, moisture_map = terrains.MakeBigForest(height_map, moisture_map)
+                        MUSIC = "Procedural_City_Generation/Music/big_forest.mp3"
                     if TERRAIN == 'desert':
-                        height_map, moisture_map = terrains.MakeDesert(
-                            height_map, moisture_map)
-                        MUSIC = "Music/desert.mp3"
+                        height_map, moisture_map = terrains.MakeDesert(height_map, moisture_map)
+                        MUSIC = "Procedural_City_Generation/Music/desert.mp3"
                     if TERRAIN == 'swamp':
-                        height_map, moisture_map = terrains.MakeSwamp(
-                            height_map, moisture_map)
-                        MUSIC = "Music/swamp.mp3"
-                    height_map = GenerateRiver(RIVER, height_map, moisture_map)
-                    screen = pygame.display.set_mode((3*XPIX, 3*YPIX))
-                    MC.colorize(TERRAIN, height_map,
-                                moisture_map, cold_map, screen)
-                    sm.Save("Map.bmp")
-
+                        height_map, moisture_map = terrains.MakeSwamp(height_map, moisture_map)
+                        MUSIC = "Procedural_City_Generation/Music/swamp.mp3"
+                    if RIVER == 'perlin':
+                        height_map = rg.PerlinRiver(height_map, XPIX, YPIX)
+                    if RIVER == 'grad_desc':
+                        moisture_map, height_map=rg.makeRiver(moisture_map,height_map)
                     # Generowanie mapy na podstawie tych danych
                     GenerateMap(height_map, moisture_map, cold_map)
 
@@ -264,8 +264,7 @@ def DisplayGUI():
             mainmenu.update(events)
             mainmenu.draw(surface)
             if (mainmenu.get_current().get_selected_widget()):
-                arrow.draw(
-                    surface, mainmenu.get_current().get_selected_widget())
+                arrow.draw(surface, mainmenu.get_current().get_selected_widget())
 
         pygame.display.update()
 
