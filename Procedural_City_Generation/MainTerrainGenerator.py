@@ -10,6 +10,7 @@ from win32api import GetSystemMetrics
 import SaveMap as sm
 import numpy as np
 import RiversGenerator as rg
+import voronoi as voi
 
 # gdzie pokazywać na ekranie będą się okna
 Width = GetSystemMetrics(0)
@@ -87,11 +88,13 @@ def GenerateMap(height_map, moisture_map, cold_map):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)
     screen = pygame.display.set_mode((XPIX*3, YPIX*3))
+    
     pygame.display.set_caption("Proceduralnie wygenerowane miasto")
     icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     MC.colorize(TERRAIN, height_map, moisture_map, cold_map, screen)
-
+    surface=pygame.display.get_surface()
+    voi.draw_voronoi(surface)
     pygame.display.update()
     sm.Save("Map.bmp")
     running = True
