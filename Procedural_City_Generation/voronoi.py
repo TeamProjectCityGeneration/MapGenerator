@@ -27,9 +27,10 @@ def draw_voronoi(pygame_surface):
 
     # draw all the edges
     for indx_pair in vor.ridge_vertices:
-        start_pos = vor.vertices[indx_pair[0]]
-        end_pos = vor.vertices[indx_pair[1]]
-
-        pygame.draw.line(pygame_surface, (0, 0, 0), start_pos, end_pos)
+        if -1 not in indx_pair:
+            start_pos = vor.vertices[indx_pair[0]]
+            end_pos = vor.vertices[indx_pair[1]]
+            #print(" cordinates ",end_pos," ",start_pos)
+            pygame.draw.line(pygame_surface, (0, 0, 0), start_pos/7, end_pos/7)
 
 __generate_voronoi()
