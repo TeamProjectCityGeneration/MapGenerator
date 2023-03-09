@@ -149,9 +149,16 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
                     collumn_mid_pixel-4, row_mid_pixel-4, collumn_mid_pixel+4, row_mid_pixel+4))
                 if cold_map[j][i] > 0.8:
                     pygame.draw.rect(pygame_screen, SNOW, pygame.Rect(
-                        collumn_mid_pixel-1, row_mid_pixel-1, collumn_mid_pixel+1, row_mid_pixel+1))
+                        collumn_mid_pixel-4, row_mid_pixel-4, collumn_mid_pixel+4, row_mid_pixel+4))
                 if possible_tree >= 99:
                     pygame.draw.rect(pygame_screen, TREE, pygame.Rect(
                         collumn_mid_pixel, row_mid_pixel, collumn_mid_pixel, row_mid_pixel))
+            if height_map[j][i] == 1.01:
+                pygame.draw.rect(pygame_screen, CITY, pygame.Rect(
+                    collumn_mid_pixel-1, row_mid_pixel-1, collumn_mid_pixel+1, row_mid_pixel+1))
+            # Ulica
+            if height_map[j][i] == 1.02:
+                pygame.draw.rect(pygame_screen, ROUTE, pygame.Rect(
+                    collumn_mid_pixel-1, row_mid_pixel-1, collumn_mid_pixel+1, row_mid_pixel+1))
             collumn_mid_pixel += 9
         row_mid_pixel += 9
