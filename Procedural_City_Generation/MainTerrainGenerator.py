@@ -84,9 +84,9 @@ def GenerateColdMap(height_map, cold, cold_str):
 def GenerateMap(height_map, moisture_map, cold_map):
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load(MUSIC)
-    pygame.mixer.music.set_volume(0.1)
-    pygame.mixer.music.play(-1)
+    #pygame.mixer.music.load(MUSIC)
+    #pygame.mixer.music.set_volume(0)
+    #pygame.mixer.music.play(-1)
     screen = pygame.display.set_mode((XPIX*3, YPIX*3))
     
     pygame.display.set_caption("Proceduralnie wygenerowane miasto")
@@ -94,7 +94,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
     pygame.display.set_icon(icon)
     MC.colorize(TERRAIN, height_map, moisture_map, cold_map, screen)
     surface=pygame.display.get_surface()
-    voi.draw_voronoi(surface)
+    voi.draw_voronoi(surface,height_map)
     pygame.display.update()
     sm.Save("Map.bmp")
     running = True
