@@ -2,7 +2,8 @@ import numpy
 import random
 import pygame
 from scipy.spatial import Voronoi
-
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
 
 def __generate_voronoi():
     """
@@ -11,7 +12,7 @@ def __generate_voronoi():
 
     :return: SciPy voronoi diagram
     """
-    denstity = 9900
+    denstity = 19900
     point_arr = numpy.zeros([denstity, 2], numpy.uint16)
 
     for i in range(denstity):
@@ -28,6 +29,10 @@ def draw_voronoi(pygame_surface,height):
     print(w)
     print("here")
     print(h)
+    point = Point(0.5, 0.5)
+    polygon = Polygon([(0, 0), (0, 1), (1, 1), (1, 0)])
+    print(polygon.contains(point))
+    print("up there")
     # draw all the edges
     for indx_pair in vor.ridge_vertices:
         if -1 not in indx_pair:
@@ -48,7 +53,9 @@ def checkObsticle(height,end_pos,start_pos,h,w):
         return False
     M = [(1,0)]
     W = [(-1,100)]
-    if(inequality(start_pos,M,W)==False or inequality(end_pos,M,W)==False):
+    #if(inequality(start_pos,M,W)==False or inequality(end_pos,M,W)==False):
+    P = [(0, 0), (0, 100), (100, 100), (100, 0)]
+    if(inShape(P,start_pos,end_pos)==False):
         return False
     if(height[int(start_pos[0]/3),int(start_pos[1]/3)]>=0.4 and height[int(end_pos[0]/3),int(end_pos[1]/3)]>=0.4 and height[int(start_pos[0]/3),int(start_pos[1]/3)]<=0.8 and height[int(end_pos[0]/3),int(end_pos[1]/3)]<=0.8):
         return True
@@ -62,3 +69,13 @@ def inequality(point,linearBigger,linearSmaller):
         if(point[1] < point[0]*i[0]+i[1]):
            return False
     return True
+
+
+def inShape(nodes,pointA,pointB):
+    poligon=Polygon(nodes)
+    if(poligon.contains(Point(pointA))==False):
+        return False
+    if(poligon.contains(Point(pointB))==False):
+        return False
+    return True
+
