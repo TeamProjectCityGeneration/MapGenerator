@@ -30,7 +30,7 @@ def draw_voronoi(pygame_surface,height):
     print(w)
     print(h)
     # draw all the edges
-    area = [(330, 50), (20, 422), (400, 400)]
+    area = [(430, 50), (20, 422), (400, 400)]
 
     for indx_pair in vor.ridge_vertices:
         if -1 not in indx_pair:
@@ -43,11 +43,12 @@ def draw_voronoi(pygame_surface,height):
 
 
 def checkObsticle(height,end_pos,start_pos,h,w,area):
+    skalar=3
     if(abs(end_pos[0])>=w or abs(end_pos[1])>=h or abs(start_pos[0])>=w or abs(start_pos[1])>=h):
         return False
     if(inShape(area,start_pos,end_pos)==False):
         return False
-    if(height[int(start_pos[0]/3),int(start_pos[1]/3)]>=0.4 and height[int(end_pos[0]/3),int(end_pos[1]/3)]>=0.4 and height[int(start_pos[0]/3),int(start_pos[1]/3)]<=0.8 and height[int(end_pos[0]/3),int(end_pos[1]/3)]<=0.8):
+    if(height[int(start_pos[0]/skalar),int(start_pos[1]/skalar)]>=0.4 and height[int(end_pos[0]/skalar),int(end_pos[1]/skalar)]>=0.4 and height[int(start_pos[0]/skalar),int(start_pos[1]/skalar)]<=0.8 and height[int(end_pos[0]/skalar),int(end_pos[1]/skalar)]<=0.8):
         return True
     return False
 
