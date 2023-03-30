@@ -10,7 +10,7 @@ import RiversGenerator as rg
 import NoiseGenerator as ng
 import CityGeneration as cg
 import random
-
+import voronoi as voi
 
 # gdzie pokazywać na ekranie będą się okna
 Width = GetSystemMetrics(0)
