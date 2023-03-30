@@ -43,7 +43,7 @@ def draw_voronoi(pygame_surface,height):
 
 
 def checkObsticle(height,end_pos,start_pos,h,w,area):
-    skalar=3
+    skalar=9
     if(abs(end_pos[0])>=w or abs(end_pos[1])>=h or abs(start_pos[0])>=w or abs(start_pos[1])>=h):
         return False
     if(inShape(area,start_pos,end_pos)==False):
