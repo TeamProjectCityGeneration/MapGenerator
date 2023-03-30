@@ -58,6 +58,9 @@ def GenerateMap(height_map, moisture_map, cold_map):
     if CITY_TYPE == 'grid':
         height_map = cg.GenerateCity1(height_map, base_size)
     MC.colorize(height_map, moisture_map, cold_map, screen)
+    if CITY_TYPE == 'voronoi':
+        surface=pygame.display.get_surface()
+        voi.draw_voronoi(surface,height_map)
     if CITY_TYPE == 'lsystem':
         cg.LSystemCity(screen, height_map, base_size, current_size)
     pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
