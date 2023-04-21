@@ -10,7 +10,7 @@ def gradientDescent():
     return(0)
 
 def makeRiver(moisture,height):
-    number=random.randint(int(math.sqrt(len(moisture)*len(moisture[0]))/5),int(math.sqrt(len(moisture)*len(moisture[0]))/4))
+    number=random.randint(int(math.sqrt(len(moisture)*len(moisture[0]))/6),int(math.sqrt(len(moisture)*len(moisture[0]))/5))
     print(number)
     for x in range (number):
         i=random.randint(1,len(moisture)-1)
@@ -22,7 +22,8 @@ def makeRiver(moisture,height):
     return   moisture, height
 
 def stop(i , j, maxX,maxY):
-    if(i>=maxX or j>= maxY or i<=0 or j<=0):
+    coin=random.randint(0,35)
+    if(i>=maxX or j>= maxY or i<=0 or j<=0 or coin ==1):
         return True
     return False
 def direction(i,j,height,VI,VJ,maxX,maxY):
