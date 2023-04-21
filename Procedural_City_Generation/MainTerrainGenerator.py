@@ -180,6 +180,7 @@ def DisplayGUI():
     pygame.init()
     pygame.display.set_caption("Proceduralna generacja miasta v0.0.3")
     icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    #icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     surface = pygame.display.set_mode((800, 500))
     mainmenu = pygame_menu.Menu('Main menu', 800, 500, theme=themes.THEME_SOLARIZED)

@@ -12,7 +12,7 @@ def __generate_voronoi():
 
     :return: SciPy voronoi diagram
     """
-    denstity = 19900
+    denstity = 39900
     point_arr = numpy.zeros([denstity, 2], numpy.uint16)
 
     for i in range(denstity):
@@ -26,9 +26,9 @@ def draw_voronoi(pygame_surface,height,area):
     # generate voronoi diagram
     vor = __generate_voronoi()
     w, h = pygame_surface.get_size()
-    print("here is size:")
-    print(w)
-    print(h)
+    #print("here is size:")
+    #print(w)
+    #print(h)
     # draw all the edges
     #area = [(400.83, 50.55), (430.23, 60.13), (460.97, 120.85), (440.44, 100.45)]
 
