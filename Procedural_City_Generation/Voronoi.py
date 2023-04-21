@@ -22,7 +22,7 @@ def __generate_voronoi():
     return Voronoi(point_arr)
 
 
-def draw_voronoi(pygame_surface,height):
+def draw_voronoi(pygame_surface,height,area):
     # generate voronoi diagram
     vor = __generate_voronoi()
     w, h = pygame_surface.get_size()
@@ -30,7 +30,7 @@ def draw_voronoi(pygame_surface,height):
     print(w)
     print(h)
     # draw all the edges
-    area = [(430, 50), (20, 422), (400, 400)]
+    #area = [(400.83, 50.55), (430.23, 60.13), (460.97, 120.85), (440.44, 100.45)]
 
     for indx_pair in vor.ridge_vertices:
         if -1 not in indx_pair:

@@ -2,11 +2,37 @@ import pygame
 import math
 import random
 import numpy as np
+import Voronoi as vn
+
+surface = 0
+heightmap = 0
+
+def set_surface(surf):
+    global surface
+    surface = surf
+    
+def set_heightmap(height):
+    global heightmap
+    heightmap = height
 
 def DrawLine(surface, x_start, y_start, x_end, y_end):
     road_color = (0, 0, 0)        
     # Rysowanie linii
     pygame.draw.line(surface, road_color, (x_start, y_start), (x_end, y_end))
+# funkcja do testowania 
+def DrawNode(surface, x, y, i):
+    if i == -1:
+        node_color = (255, 0, 0)
+    if i == 0:
+        node_color = (0, 255, 0)
+    if i == 1:
+        node_color = (0, 0, 255)
+    if i == 2:
+        node_color = (255, 255, 0)
+    if i == 3:
+        node_color = (255, 0, 255)
+    # Rysowanie nodeów (do testowania)
+    pygame.draw.circle(surface, node_color, (x, y), 2)
         
 def GenerateString(rules, sentence):
     newString = ''
@@ -20,62 +46,156 @@ def GenerateString(rules, sentence):
     return newString
 
 def LSystemCity(screen, height_map, base_size, current_size):
+    set_heightmap(height_map)
+    set_surface(screen)
+    nodes_positions = []
     multiplier = current_size[0]/base_size[0]
-    base_length = 6
+    base_length = 40
     base_degree = 0
     while True:
-        x_start = random.randint(0, base_size[0]-6)
-        y_start = random.randint(0, base_size[1])
+        x_start = random.randint(base_size[0]/5, base_size[0]-base_size[0]/5)
+        y_start = random.randint(base_size[1]/5, base_size[1]-base_size[1]/5)
         if height_map[x_start][y_start] > 0.35:
             x_start *= multiplier
             y_start *= multiplier
             break
+    print(x_start, y_start)
     positions = []
     base_string = "F"
-    rules = {"F" : "F+F+F-[F-FF+F]-F-F-F+[F-FF+F]"}
+    rules = {"F" : "F[+F][-F]"}
     complexity_level = 3
+    DrawNode(screen, x_start, y_start, -1)
+    nodes_positions.append({"x": x_start, "y": y_start, "generation": -1, "taken": False})
+    for j in range (pow(complexity_level,2)):
+        x_new, y_new = GenerateRandomNode(x_start, y_start, base_length)
+        DrawNode(screen, x_new, y_new, -1)
+        nodes_positions.append({"x": x_new, "y": y_new, "generation": -1, "taken": False})
     for i in range (complexity_level):
         string = GenerateString(rules, base_string)
         base_string = string
-    for char in base_string:
-        degree_offset = 0
-        check = True
-        if char == "F":
-            # Specjalny przypadek (dzielenie przez 0)
-            if (base_degree+degree_offset) % 180 == 0:
-                x_end = round(x_start + base_length)
-                y_end = round(y_start)
-                DrawLine(screen, x_start, y_start, x_end, y_end)
-                x_start = x_end
-                y_start = y_end
-            # Wszystkie inne przypadki
+        for char in base_string:
+            checks = 0
+            check = True
+            if char == "F":
+                # Specjalny przypadek (dzielenie przez 0)
+                if (base_degree) % 180 == 0:
+                    x_end = round(x_start + base_length)
+                    y_end = round(y_start)
+                    DrawNode(screen, x_end, y_end, i)
+                    nodes_positions.append({"x": x_end, "y": y_end, "generation": i, "taken": False})
+                    DrawLine(screen, x_start, y_start, x_end, y_end)
+                    for j in range (complexity_level-3*i+4):
+                        x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
+                        DrawNode(screen, x_new, y_new, i)
+                        nodes_positions.append({"x": x_new, "y": y_new, "generation": i, "taken": False})
+                    x_start = x_end
+                    y_start = y_end
+                # Wszystkie inne przypadki
+                else:
+                    #while check == True and checks < 30:         
+                        radian = math.pi/(180/base_degree)
+                        x_len = round(base_length*math.cos(radian))
+                        y_len = round(base_length*math.sin(radian))
+                        if x_end < base_size[0]*multiplier and y_end < base_size[1]*multiplier and x_end > 0 and y_end > 0 and height_map[math.floor(x_end/multiplier)][math.floor(y_end/multiplier)] > 0.35:
+                            x_end = round(x_start + x_len)
+                            y_end = round(y_start + y_len)
+                            DrawLine(screen, x_start, y_start, x_end, y_end)
+                            DrawNode(screen, x_end, y_end, i)
+                            nodes_positions.append({"x": x_end, "y": y_end, "generation": i, "taken": False})
+                            for j in range (complexity_level-3*i+4):
+                                x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
+                                DrawNode(screen, x_new, y_new, i)
+                                nodes_positions.append({"x": x_new, "y": y_new, "generation": i, "taken": False})
+                            x_start = x_end
+                            y_start = y_end
+                            check = False
+                        else:
+                            base_degree += 35
+                            checks += 1
+            elif char == "+":
+                base_degree += random.randint(20, 70)
+            elif char == "-":
+                base_degree -= random.randint(20, 70)
+            elif char == "[":
+                positions.append({"x": x_end, "y": y_end, "alpha": base_degree})
+            elif char == "]":
+                position = positions.pop()
+                x_start = position["x"]
+                y_start = position["y"]
+                base_degree = position["alpha"]
             else:
-                while check == True:         
-                    radian = math.pi/(180/base_degree+degree_offset)
-                    x_len = round(base_length*math.cos(radian))
-                    y_len = round(base_length*math.sin(radian))
-                    print(math.ceil(x_end/multiplier),math.ceil(y_end/multiplier))
-                    if x_end < base_size[0]*multiplier and y_end < base_size[1]*multiplier and x_end > 0 and y_end > 0 and height_map[math.ceil(x_end/multiplier)][math.ceil(y_end/multiplier)] > 0.35:
-                        x_end = round(x_start + x_len)
-                        y_end = round(y_start + y_len)
-                        DrawLine(screen, x_start, y_start, x_end, y_end)
-                        x_start = x_end
-                        y_start = y_end
-                        check = False
-                    else:
-                        base_degree += 45
-        elif char == "+":
-            base_degree += 20
-        elif char == "-":
-            base_degree -= 20
-        elif char == "[":
-            positions.append({"x": x_end, "y": y_end})
-        elif char == "]":
-            position = positions.pop()
-            x_start = position["x"]
-            y_start = position["y"]
-        else:
-            pass
+                pass
+    Polygonize(nodes_positions)
+    
+
+def Polygonize(nodes_positions):
+    left = len(nodes_positions)
+    n_of_generations = nodes_positions[left-1]["generation"]
+    breakpoints = []
+    search = -1
+    total = 0
+    for i in range (n_of_generations+2):
+        start = total
+        while total < left and nodes_positions[total]["generation"] == search:
+            total += 1
+        search += 1
+        breakpoints.append({"start": start, "end": total})
+        
+    group_id = 0
+    while group_id < len(breakpoints):
+        start = breakpoints[group_id]["start"]
+        end = breakpoints[group_id]["end"]
+        left = end-start
+        while left > 0:
+            polygon_vertex_number = random.randint(3,6)
+            if polygon_vertex_number < left:
+                if left-polygon_vertex_number < 3:
+                    polygon_vertex_number += left-polygon_vertex_number
+            else:
+                polygon_vertex_number = left
+            left = left - polygon_vertex_number
+            i = 0
+            while True:
+                if nodes_positions[i]["taken"] == False:
+                    init_point_id = i
+                    nodes_positions[i]["taken"] = True
+                    CountDistance(init_point_id, nodes_positions, start, end, polygon_vertex_number)
+                    break
+                else:
+                    i += 1
+                    continue
+        group_id += 1
+    
+def CountDistance(init_point_id, nodes_positions, start, end, polygon_vertex_number):
+    distance = []
+    ids = []
+    ids.append(init_point_id)
+    for i in range(start, end):
+        if i != init_point_id:
+            dst = math.sqrt(pow(nodes_positions[init_point_id]["x"]-nodes_positions[i]["x"],2)+pow(nodes_positions[init_point_id]["y"]-nodes_positions[i]["y"],2))
+            distance.append({"distance": dst, "id": i})
+    distance = sorted(distance, key=lambda d: d['distance'])
+    for i in range(polygon_vertex_number):  
+        id = distance[i]["id"]
+        nodes_positions[id]["taken"] = True
+        ids.append(id)
+    DrawPolygonAndCity(ids, nodes_positions)
+        
+        
+def DrawPolygonAndCity(ids, nodes_positions):
+    points = []
+    for i in range (len(ids)):
+        points.append((nodes_positions[ids[i]]["x"], nodes_positions[ids[i]]["y"]))
+        DrawNode(surface, points[i][0], points[i][1], 3)
+    vn.draw_voronoi(surface, heightmap, points)
+    print(points)
+      
+def GenerateRandomNode(x, y, radius):
+    degree = 2 * math.pi * random.random()
+    r = radius * math.sqrt(random.random())
+    x_new = r * math.cos(degree) + x
+    y_new = r * math.sin(degree) + y
+    return x_new, y_new
 
 def GenerateCity1(height_map, base_size):
     def DrawLineX(height_map, x, y):
