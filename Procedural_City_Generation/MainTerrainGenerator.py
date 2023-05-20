@@ -16,7 +16,6 @@ import Voronoi as voi
 Width = GetSystemMetrics(0)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % (Width/2-300, 100)
 
-
 def GenerateColdMap(height_map, cold, cold_str):
     cold_map = (XPIX, YPIX)
     cold_map = np.zeros(cold_map)
@@ -61,7 +60,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
     if CITY_TYPE == 'voronoi':
         surface=pygame.display.get_surface()
         voi.draw_voronoi(surface,height_map)
-    if CITY_TYPE == 'lsystem':
+    if CITY_TYPE == 'fixed':
         cg.LSystemCity(screen, height_map, base_size, current_size)
     pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
     screen = pygame.display.set_mode((450,450))
@@ -207,7 +206,7 @@ def DisplayGUI():
     setting_values.add.selector('Cold power :',
                                 [('Weak', 'weak'), ('Medium', 'medium'), ('Strong', 'strong')], onchange=set_cold_strenght)
     setting_values.add.selector('City Type :',
-                                [('None', 'none'), ('L-systems', 'lsystem'), ('Grid', 'grid'), ('Voronoi', 'voronoi')], onchange=set_city_type)
+                                [('None', 'none'), ('Fixed', 'fixed'), ('Grid', 'grid'), ('Voronoi', 'voronoi')], onchange=set_city_type)
 
 
     loading = pygame_menu.Menu(

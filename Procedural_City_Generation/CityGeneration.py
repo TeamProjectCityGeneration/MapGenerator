@@ -59,17 +59,16 @@ def LSystemCity(screen, height_map, base_size, current_size):
             x_start *= multiplier
             y_start *= multiplier
             break
-    print(x_start, y_start)
     positions = []
     base_string = "F"
     rules = {"F" : "F[+F][-F]"}
     complexity_level = 3
     DrawNode(screen, x_start, y_start, -1)
-    nodes_positions.append({"x": x_start, "y": y_start, "generation": -1, "taken": False})
+    nodes_positions.append((x_start, y_start))
     for j in range (pow(complexity_level,2)):
         x_new, y_new = GenerateRandomNode(x_start, y_start, base_length)
         DrawNode(screen, x_new, y_new, -1)
-        nodes_positions.append({"x": x_new, "y": y_new, "generation": -1, "taken": False})
+        nodes_positions.append((x_start, y_start))
     for i in range (complexity_level):
         string = GenerateString(rules, base_string)
         base_string = string
@@ -82,12 +81,12 @@ def LSystemCity(screen, height_map, base_size, current_size):
                     x_end = round(x_start + base_length)
                     y_end = round(y_start)
                     DrawNode(screen, x_end, y_end, i)
-                    nodes_positions.append({"x": x_end, "y": y_end, "generation": i, "taken": False})
+                    nodes_positions.append((x_start, y_start))
                     DrawLine(screen, x_start, y_start, x_end, y_end)
-                    for j in range (complexity_level-3*i+4):
+                    for j in range (complexity_level-3*i+3):
                         x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
                         DrawNode(screen, x_new, y_new, i)
-                        nodes_positions.append({"x": x_new, "y": y_new, "generation": i, "taken": False})
+                        nodes_positions.append((x_start, y_start))
                     x_start = x_end
                     y_start = y_end
                 # Wszystkie inne przypadki
@@ -101,11 +100,11 @@ def LSystemCity(screen, height_map, base_size, current_size):
                             y_end = round(y_start + y_len)
                             DrawLine(screen, x_start, y_start, x_end, y_end)
                             DrawNode(screen, x_end, y_end, i)
-                            nodes_positions.append({"x": x_end, "y": y_end, "generation": i, "taken": False})
-                            for j in range (complexity_level-3*i+4):
+                            nodes_positions.append((x_start, y_start))
+                            for j in range (complexity_level-3*i+3):
                                 x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
                                 DrawNode(screen, x_new, y_new, i)
-                                nodes_positions.append({"x": x_new, "y": y_new, "generation": i, "taken": False})
+                                nodes_positions.append((x_start, y_start))
                             x_start = x_end
                             y_start = y_end
                             check = False
@@ -125,9 +124,10 @@ def LSystemCity(screen, height_map, base_size, current_size):
                 base_degree = position["alpha"]
             else:
                 pass
-    Polygonize(nodes_positions)
+    DrawPolygonAndCity(nodes_positions)
+    #Polygonize(nodes_positions)
     
-
+"""
 def Polygonize(nodes_positions):
     left = len(nodes_positions)
     n_of_generations = nodes_positions[left-1]["generation"]
@@ -150,7 +150,7 @@ def Polygonize(nodes_positions):
             polygon_vertex_number = random.randint(3,6)
             if polygon_vertex_number < left:
                 if left-polygon_vertex_number < 3:
-                    polygon_vertex_number += left-polygon_vertex_number
+                    polygon_vertex_number = left-polygon_vertex_number
             else:
                 polygon_vertex_number = left
             left = left - polygon_vertex_number
@@ -179,16 +179,11 @@ def CountDistance(init_point_id, nodes_positions, start, end, polygon_vertex_num
         id = distance[i]["id"]
         nodes_positions[id]["taken"] = True
         ids.append(id)
-    DrawPolygonAndCity(ids, nodes_positions)
+    DrawPolygonAndCity(nodes_positions)
+"""        
         
-        
-def DrawPolygonAndCity(ids, nodes_positions):
-    points = []
-    for i in range (len(ids)):
-        points.append((nodes_positions[ids[i]]["x"], nodes_positions[ids[i]]["y"]))
-        DrawNode(surface, points[i][0], points[i][1], 3)
-    vn.draw_voronoi(surface, heightmap, points)
-    print(points)
+def DrawPolygonAndCity(nodes_positions):
+    vn.draw_voronoi(surface, heightmap, nodes_positions)
       
 def GenerateRandomNode(x, y, radius):
     degree = 2 * math.pi * random.random()

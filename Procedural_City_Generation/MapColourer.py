@@ -26,8 +26,6 @@ CITY = 0xff0000  # Czerwony
 ROUTE = 0xffaa00  # Pomarańczowy jasny
 
 def colorize(height_map, moisture_map, cold_map, pygame_screen):
-
-    # Poprawiono [i][j] na [j][i] - błąd logiczny, ponieważ działaliśmy na X/Y a odwoływaliśmy się Y/X
     row_mid_pixel = 5
     for i in range(len(height_map[0])):  # X
         collumn_mid_pixel = 5
