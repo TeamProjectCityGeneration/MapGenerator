@@ -20,18 +20,19 @@ def PerlinRiver(height_map, xpix, ypix):
 def makeRiver(moisture,height):
     number=random.randint(int(len(moisture)/4),int(len(moisture)/2))
     for x in range (number):
-        i=random.randint(1,len(moisture)-25)
-        j=random.randint(1,len(moisture)-25)
+        i=random.randint(1,len(moisture)-1)
+        j=random.randint(1,len(moisture[0])-1)
         moisture[i][j]=0.9
-        makeLine(0,i,j,len(moisture)-1,moisture,height)
+        makeLine(0,i,j,len(moisture)-1,len(moisture[i]),moisture,height)
     #for x in range(100):
     #    print(moisture[x])
     return   moisture, height
 
-def stop(x, i , j, max):
-    if(i>=max or j>= max or i<=0 or j<=0):
+def stop(x, i , j, maxX,maxY):
+    if(i>=maxX or j>= maxY or i<=0 or j<=0):
         return True
     return False
+
 def direction(i,j,height,VI,VJ):
     ai=[]
     aj=[]
@@ -98,7 +99,7 @@ def direction(i,j,height,VI,VJ):
         index=random.randint(0,7)
         return bi[index],bj[index]
 
-def makeLine(x,i,j,max,moisture,height):
+def makeLine(x,i,j,maxX,maxY,moisture,height):
     number=random.randint(len(moisture),len(moisture)*5)
     prevI, prevJ = i, j
     i,j=direction(i, j, height,2,2) 
@@ -110,5 +111,5 @@ def makeLine(x,i,j,max,moisture,height):
         i, j=direction(i, j, height,VI,VJ)
         prevI, prevJ = i, j
         #makeLine(x,newI,newJ,max,moisture,height,newI-i,newJ-j)
-        if(stop(x,i,j,max)==True):
+        if(stop(x,i,j,maxX,maxY)==True):
             break

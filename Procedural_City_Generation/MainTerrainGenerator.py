@@ -61,13 +61,8 @@ def GenerateMap(height_map, moisture_map, cold_map):
     if CITY_TYPE == 'voronoi':
         area = [(400.83, 350.55), (430.23, 60.13), (10.97, 10.85)]
         surface=pygame.display.get_surface()
-<<<<<<< HEAD
-        voi.draw_voronoi(surface,height_map)
-    if CITY_TYPE == 'fixed':
-=======
         voi.draw_voronoi(surface,height_map,area)
-    if CITY_TYPE == 'lsystem':
->>>>>>> voronoiProblem
+    if CITY_TYPE == 'fixed':
         cg.LSystemCity(screen, height_map, base_size, current_size)
     #pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
     pygame.image.save(screen,'Map.bmp')
@@ -187,8 +182,8 @@ def DisplayGUI():
 
     pygame.init()
     pygame.display.set_caption("Proceduralna generacja miasta v0.0.3")
-    icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
-    #icon = pygame.image.load('Ikona.png')
+    #icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     surface = pygame.display.set_mode((800, 500))
     mainmenu = pygame_menu.Menu('Main menu', 800, 500, theme=themes.THEME_SOLARIZED)
