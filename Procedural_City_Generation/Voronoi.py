@@ -5,6 +5,7 @@ from scipy.spatial import Voronoi
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from math import sqrt
+import HomeCreator as hc
 
 def __generate_voronoi():
     """
@@ -102,7 +103,7 @@ def drawParcel(parcels,surface):
     for parcel in parcels:
         point=cercle_circonscrit(parcel)
         if(point!=0):
-            pygame.draw.circle(surface,(250,0,0),point,1.85)
+            hc.setBuildingOnPoint(point,surface)
 
 def avg(array):
     point=[0,0]
