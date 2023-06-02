@@ -3,6 +3,7 @@ import math
 import random
 import numpy as np
 import Voronoi as vn
+import MapColourer as mc
 
 surface = 0
 heightmap = 0
@@ -14,6 +15,10 @@ def set_surface(surf):
 def set_heightmap(height):
     global heightmap
     heightmap = height
+    
+def set_moisturemap(moisture):
+    global moisturemap
+    moisturemap = moisture
 
 def DrawLine(surface, x_start, y_start, x_end, y_end):
     road_color = (0, 0, 0)        
@@ -45,9 +50,10 @@ def GenerateString(rules, sentence):
         newString += map
     return newString
 
-def LSystemCity(screen, height_map, base_size, current_size):
+def LSystemCity(screen, height_map, moisture_map, base_size, current_size):
     set_heightmap(height_map)
     set_surface(screen)
+    set_moisturemap(moisture_map)
     nodes_positions = []
     multiplier = current_size[0]/base_size[0]
     base_length = 40
@@ -127,6 +133,10 @@ def LSystemCity(screen, height_map, base_size, current_size):
     DrawPolygonAndCity(nodes_positions)
     #Polygonize(nodes_positions)
     
+def DrawPolygonAndCity(nodes_positions):
+    vn.draw_voronoi(surface, heightmap, nodes_positions)    
+    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions)
+    
 """
 def Polygonize(nodes_positions):
     left = len(nodes_positions)
@@ -181,9 +191,6 @@ def CountDistance(init_point_id, nodes_positions, start, end, polygon_vertex_num
         ids.append(id)
     DrawPolygonAndCity(nodes_positions)
 """        
-        
-def DrawPolygonAndCity(nodes_positions):
-    vn.draw_voronoi(surface, heightmap, nodes_positions)
       
 def GenerateRandomNode(x, y, radius):
     degree = 2 * math.pi * random.random()

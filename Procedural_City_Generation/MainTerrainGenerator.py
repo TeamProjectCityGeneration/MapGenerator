@@ -49,7 +49,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)
     base_size = (XPIX, YPIX)
-    current_size = (XPIX*9, YPIX*9)
+    current_size = (9*XPIX, 9*YPIX)
     screen = pygame.display.set_mode(current_size)
     pygame.display.set_caption('Proceduralnie wygenerowane miasto')
     icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
@@ -61,11 +61,11 @@ def GenerateMap(height_map, moisture_map, cold_map):
         surface=pygame.display.get_surface()
         voi.draw_voronoi(surface,height_map)
     if CITY_TYPE == 'fixed':
-        cg.LSystemCity(screen, height_map, base_size, current_size)
+        cg.LSystemCity(screen, height_map, moisture_map, base_size, current_size)
     pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
-    screen = pygame.display.set_mode((450,450))
+    screen = pygame.display.set_mode((900,900))
     img = pygame.image.load('Procedural_City_Generation/Map.bmp')
-    screen.blit(img, (0, 0), (0, 0, 450, 450))
+    screen.blit(img, (0, 0), (0, 0, 900, 900))
     pygame.display.update()
     running = True
     x_offset = 0
@@ -84,7 +84,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
                 y_offset += 1
                 scrollY(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_DOWN]:
-            if (y_offset > -current_size[1]+450):
+            if (y_offset > -current_size[1]+900):
                 y_offset -= 1
                 scrollY(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_LEFT]:
@@ -92,7 +92,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
                 x_offset += 1
                 scrollX(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_RIGHT]:
-            if (x_offset > -current_size[0]+450):
+            if (x_offset > -current_size[0]+900):
                 x_offset -= 1
                 scrollX(screen, img, x_offset, y_offset)
         pygame.display.update()
