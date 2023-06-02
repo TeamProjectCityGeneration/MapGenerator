@@ -116,7 +116,7 @@ def makeLine(x,i,j,maxX,maxY,moisture,height):
             if(stop(i,j,maxX,maxY)==True):
                 break
         except:
-            print("fuck")
+            print("e100")
             break
 
 def checkDirection(x,i, j,maxX,maxY,height):
