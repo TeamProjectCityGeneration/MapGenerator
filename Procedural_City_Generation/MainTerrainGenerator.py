@@ -45,21 +45,23 @@ def GenerateColdMap(height_map, cold, cold_str):
 def GenerateMap(height_map, moisture_map, cold_map):
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load(MUSIC)
-    pygame.mixer.music.set_volume(0.1)
-    pygame.mixer.music.play(-1)
+    #pygame.mixer.music.load(MUSIC)
+    #pygame.mixer.music.set_volume(0.1)
+    #pygame.mixer.music.play(-1)
     base_size = (XPIX, YPIX)
     current_size = (9*XPIX, 9*YPIX)
     screen = pygame.display.set_mode(current_size)
     pygame.display.set_caption('Proceduralnie wygenerowane miasto')
-    icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    #icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     if CITY_TYPE == 'grid':
         height_map = cg.GenerateCity1(height_map, base_size)
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'voronoi':
+        area = voi.getRandomArea(current_size)
         surface=pygame.display.get_surface()
-        voi.draw_voronoi(surface,height_map)
+        voi.draw_voronoi(surface,height_map,area)
     if CITY_TYPE == 'fixed':
         cg.LSystemCity(screen, height_map, moisture_map, base_size, current_size)
     pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
@@ -178,7 +180,8 @@ def DisplayGUI():
 
     pygame.init()
     pygame.display.set_caption("Proceduralna generacja miasta v0.0.3")
-    icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    #icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     surface = pygame.display.set_mode((800, 500))
     mainmenu = pygame_menu.Menu('Main menu', 800, 500, theme=themes.THEME_SOLARIZED)
