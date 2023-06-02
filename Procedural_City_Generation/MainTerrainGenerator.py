@@ -64,9 +64,9 @@ def GenerateMap(height_map, moisture_map, cold_map):
         voi.draw_voronoi(surface,height_map,area)
     if CITY_TYPE == 'fixed':
         cg.LSystemCity(screen, height_map, moisture_map, base_size, current_size)
-    pygame.image.save(screen,'Procedural_City_Generation/Map.bmp')
+    pygame.image.save(screen,'Map.bmp')
     screen = pygame.display.set_mode((900,900))
-    img = pygame.image.load('Procedural_City_Generation/Map.bmp')
+    img = pygame.image.load('Map.bmp')
     screen.blit(img, (0, 0), (0, 0, 900, 900))
     pygame.display.update()
     running = True
@@ -239,25 +239,25 @@ def DisplayGUI():
                     # Generuję mapę wysokości, maskę wilgotności i zimna
                     if TERRAIN == 'mountains':
                         height_map = terrains.MakeMountains(height_map)
-                        MUSIC = "Procedural_City_Generation/Music/mountains.mp3"
+                        MUSIC = "Music/mountains.mp3"
                     if TERRAIN == 'plains':
                         height_map = terrains.MakeLowlands(height_map)
-                        MUSIC = 'Procedural_City_Generation/Music/plains.mp3'
+                        MUSIC = 'Music/plains.mp3'
                     if TERRAIN == 'island':
                         height_map = terrains.MakeIsland(height_map, XPIX, YPIX)
-                        MUSIC = 'Procedural_City_Generation/Music/island.mp3'
+                        MUSIC = 'Music/island.mp3'
                     if TERRAIN == 'many_islands':
                         height_map = terrains.MakeIslands(height_map)
-                        MUSIC = "Procedural_City_Generation/Music/many_islands.mp3"
+                        MUSIC = "Music/many_islands.mp3"
                     if TERRAIN == 'big_forest':
                         height_map, moisture_map = terrains.MakeBigForest(height_map, moisture_map)
-                        MUSIC = "Procedural_City_Generation/Music/big_forest.mp3"
+                        MUSIC = "Music/big_forest.mp3"
                     if TERRAIN == 'desert':
                         height_map, moisture_map = terrains.MakeDesert(height_map, moisture_map)
-                        MUSIC = "Procedural_City_Generation/Music/desert.mp3"
+                        MUSIC = "Music/desert.mp3"
                     if TERRAIN == 'swamp':
                         height_map, moisture_map = terrains.MakeSwamp(height_map, moisture_map)
-                        MUSIC = "Procedural_City_Generation/Music/swamp.mp3"
+                        MUSIC = "Music/swamp.mp3"
                     if RIVER == 'perlin':
                         height_map = rg.PerlinRiver(height_map, XPIX, YPIX)
                     if RIVER == 'grad_desc':
