@@ -3,13 +3,13 @@ import random
 
 def setBuildingOnPoint(point,surface):
     shape=random.randint(0,2)
-    R=random.randint(50,200)
-    G=random.randint(50,200)
-    B=random.randint(50,200)
+    R=random.randint(75,150)
+    G=random.randint(75,150)
+    B=random.randint(75,150)
     if(shape==0):
         pygame.draw.circle(surface,(R,G,B),point,1.85)
     elif(shape==1):
-        rect=pygame.Rect(point[0],point[0]+2,2,2)
+        rect=pygame.Rect(point[0],point[1]+2,2.5,2.5)
         pygame.draw.rect(surface,(R,G,B),rect)
     else:
         points=[]

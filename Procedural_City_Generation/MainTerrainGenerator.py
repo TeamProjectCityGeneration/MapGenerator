@@ -59,7 +59,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
         height_map = cg.GenerateCity1(height_map, base_size)
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'voronoi':
-        area = [(400.83, 350.55), (430.23, 60.13), (10.97, 10.85)]
+        area = voi.getRandomArea(current_size)
         surface=pygame.display.get_surface()
         voi.draw_voronoi(surface,height_map,area)
     if CITY_TYPE == 'fixed':

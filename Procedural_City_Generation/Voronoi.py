@@ -157,3 +157,13 @@ def cercle_circonscrit(T):
     r = sqrt((x-x1)**2+(y-y1)**2)
     return (x,y)
 
+def getRandomArea(max):
+    #area = [(400.83, 350.55), (430.23, 60.13), (10.97, 10.85)]
+    area=[]
+    nodes=random.randint(3,15)
+    for i in range(nodes):
+        x = random.randint(1,max[0])
+        y = random.randint(1,max[1])
+        point=(x,y)
+        area.append(point)
+    return area
