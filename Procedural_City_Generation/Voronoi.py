@@ -46,7 +46,8 @@ def draw_voronoi(pygame_surface,height,area):
                 pygame.draw.line(pygame_surface, (0, 0, 0), end_pos, start_pos)
     #print(parcels)
     #print(parcel)
-    drawParcel(parcels,pygame_surface)
+    regionsPoint = getMiddleOfRegion(vor,height,area,w,h)
+    drawBuildings(regionsPoint,pygame_surface)
 #__generate_voronoi()
 
 
@@ -167,3 +168,28 @@ def getRandomArea(max):
         point=(x,y)
         area.append(point)
     return area
+
+def getMiddleOfRegion(vor,height,area,w,h):
+    buildings=[]
+    points=vor.points
+    for point in points:
+       if(checkPoint(height,area,w,h,point)):
+           buildings.append(point)
+    return buildings
+
+def checkPoint(height,area,w,h,point):
+    skalar=9
+    poligon=Polygon(area)
+    #print(point)
+    #print(point[0]," point is ",point[1])
+    if(abs(point[0])>=w or abs(point[1])>=h):
+        return False
+    if(poligon.contains(Point(point))==False):
+        return False
+    if(height[int(point[0]/skalar),int(point[1]/skalar)]>=0.33  and height[int(point[0]/skalar),int(point[1]/skalar)]<=0.8):
+        return True
+    return False
+
+def drawBuildings(points,surface):
+    for point in points:
+        hc.setBuildingOnPoint(point,surface)
