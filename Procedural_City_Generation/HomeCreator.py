@@ -7,17 +7,17 @@ def setBuildingOnPoint(point,surface):
     G=random.randint(75,150)
     B=random.randint(75,150)
     if(shape==0):
-        pygame.draw.circle(surface,(R,G,B),point,1.85)
+        pygame.draw.circle(surface,(R,G,B),point,3)
     elif(shape==1):
-        rect=pygame.Rect(point[0],point[1]+2,2.5,2.5)
+        rect=pygame.Rect(point[0],point[1]+4,4,4)
         pygame.draw.rect(surface,(R,G,B),rect)
     else:
         points=[]
         shape=random.randint(3,8)
         for i in range(shape):
             newPoint=[point[0],point[1]]
-            x=random.uniform(-2.0,2.0)
-            y=random.uniform(-2.0,2.0)
+            x=random.uniform(-3.0,3.0)
+            y=random.uniform(-3.0,3.0)
             newPoint[0]=newPoint[0]+x
             newPoint[1]=newPoint[1]+y
             points.append(newPoint)

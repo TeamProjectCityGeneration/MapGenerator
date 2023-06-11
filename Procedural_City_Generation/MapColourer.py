@@ -41,7 +41,7 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
         for j in range(len(height_map)):  # Y
             #possible_tree = random.randint(0, 99)
             # Ocean
-            print(collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower)
+            #print(collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower)
             if 0 <= height_map[j][i] < 0.15:
                 pygame.draw.rect(pygame_screen, DEEP_SEA, pygame.Rect(
                     collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower))

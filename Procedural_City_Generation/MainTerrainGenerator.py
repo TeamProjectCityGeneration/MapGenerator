@@ -65,8 +65,8 @@ def GenerateMap(height_map, moisture_map, cold_map):
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'voronoi':
         area = voi.getRandomArea(current_size)
-        surface=pygame.display.get_surface()
-        voi.draw_voronoi(surface,height_map,area)
+        #surface=pygame.display.get_surface()
+        voi.draw_voronoi(screen,height_map,area)
     if CITY_TYPE == 'fixed':
         cg.LSystemCity(screen, height_map, moisture_map, base_size, current_size)
     pygame.image.save(screen,'Map.bmp')

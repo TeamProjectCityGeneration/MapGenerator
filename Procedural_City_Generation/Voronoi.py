@@ -7,40 +7,43 @@ from shapely.geometry.polygon import Polygon
 from math import sqrt
 import HomeCreator as hc
 
-def __generate_voronoi():
+def __generate_voronoi(w,h):
     #denstity = 9999
     #denstity = 48000
-    denstity = 24000
+    denstity = 34000
 
     point_arr = numpy.zeros([denstity, 2], numpy.uint16)
 
     for i in range(denstity):
-        point_arr[i][0] = numpy.uint16(random.randint(0, 1600))
-        point_arr[i][1] = numpy.uint16(random.randint(0, 900))
+        point_arr[i][0] = numpy.uint16(random.randint(0, w+100))
+        point_arr[i][1] = numpy.uint16(random.randint(0, h+100))
 
     return Voronoi(point_arr)
 
 
 def draw_voronoi(pygame_surface,height,area):
-    vor = __generate_voronoi()
     w, h = pygame_surface.get_size()
+    vor = __generate_voronoi(w,h)
+    print(w," w, h", h)
+    print(len(height)," array ",len(height[0]))
     for indx_pair in vor.ridge_vertices:
         if -1 not in indx_pair:
             start_pos = vor.vertices[indx_pair[0]]
             end_pos = vor.vertices[indx_pair[1]]
             if(checkObsticle(height,end_pos,start_pos,h,w,area)):
-                pygame.draw.line(pygame_surface, (0, 0, 0), end_pos, start_pos)
+                pygame.draw.line(pygame_surface, (0, 0, 0), end_pos, start_pos,3)
     parcels = getMiddleOfRegion(vor,height,area,w,h)
     drawBuildings(parcels,pygame_surface)
 
 
 def checkObsticle(height,end_pos,start_pos,h,w,area):
-    skalar=9
+    skalarW=w/len(height)
+    skalarH=h/len(height[0])
     if(abs(end_pos[0])>=w or abs(end_pos[1])>=h or abs(start_pos[0])>=w or abs(start_pos[1])>=h):
         return False
     if(inShape(area,start_pos,end_pos)==False):
         return False
-    if(height[int(start_pos[0]/skalar),int(start_pos[1]/skalar)]>=0.33 and height[int(end_pos[0]/skalar),int(end_pos[1]/skalar)]>=0.33 and height[int(start_pos[0]/skalar),int(start_pos[1]/skalar)]<=0.8 and height[int(end_pos[0]/skalar),int(end_pos[1]/skalar)]<=0.8):
+    if(height[int(start_pos[0]/skalarW),int(start_pos[1]/skalarH)]>=0.33 and height[int(end_pos[0]/skalarW),int(end_pos[1]/skalarH)]>=0.33 and height[int(start_pos[0]/skalarW),int(start_pos[1]/skalarH)]<=0.8 and height[int(end_pos[0]/skalarW),int(end_pos[1]/skalarH)]<=0.8):
         return True
     return False
 
@@ -88,13 +91,14 @@ def getMiddleOfRegion(vor,height,area,w,h):
     return buildings
 
 def checkPoint(height,area,w,h,point):
-    skalar=9
+    skalarW=w/len(height)
+    skalarH=h/len(height[0])
     poligon=Polygon(area)
     if(abs(point[0])>=w or abs(point[1])>=h):
         return False
     if(poligon.contains(Point(point))==False):
         return False
-    if(height[int(point[0]/skalar),int(point[1]/skalar)]>=0.33  and height[int(point[0]/skalar),int(point[1]/skalar)]<=0.8):
+    if(height[int(point[0]/skalarW),int(point[1]/skalarH)]>=0.33  and height[int(point[0]/skalarW),int(point[1]/skalarH)]<=0.8):
         return True
     return False
 
