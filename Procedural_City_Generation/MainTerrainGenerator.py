@@ -16,47 +16,52 @@ import Voronoi as voi
 Width = GetSystemMetrics(0)
 os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % (Width/2-300, 100)
 
-def GenerateColdMap(height_map, cold, cold_str):
+def GenerateColdMap(height_map, cold_type, cold_str):
     cold_map = (XPIX, YPIX)
     cold_map = np.zeros(cold_map)
+    if cold_str == 'none':
+        cold_const = 0
     if cold_str == 'weak':
-        cold_const = 0.8
+        cold_const = 0.65
     if cold_str == 'medium':
-        cold_const = 1
+        cold_const = 0.8
     if cold_str == 'strong':
-        cold_const = 1.2
-    if cold == 'none':
+        cold_const = 1.1
+    if cold_type == 'none':
         return cold_map
-    if cold == 'north_pole':
+    if cold_type == 'north_pole':
         cold_map = terrains.NormalizeData(height_map, 0, 0.4)
         for i in range(XPIX):
             for j in range(YPIX):
-                cold_map[i][j] = cold_map[i][j] + cold_const-(j/XPIX)*(cold_const*0.8)
-    if cold == 'south_pole':
+                cold_map[i][j] = cold_map[i][j] + cold_const-(j/YPIX)*(cold_const*0.8)
+    if cold_type == 'south_pole':
         cold_map = terrains.NormalizeData(height_map, 0, 0.4)
         for i in range(XPIX):
-            for j in range(YPIX):        
-                cold_map[i][j] = cold_map[i][j] + cold_const-(j/XPIX)*(cold_const*0.8)
-            cold_map[i][:] = cold_map[i][:][::-1]
-        
+            for j in range(YPIX):
+                cold_map[i][j] = cold_map[i][j] + cold_const-((YPIX-j)/YPIX)*(cold_const*0.8)  
+    if cold_type == 'bipolar':
+        cold_map = terrains.NormalizeData(height_map, 0, 0.4)
+        for i in range(XPIX):
+            for j in range(YPIX):
+                if j <= YPIX/2:     
+                    cold_map[i][j] = cold_map[i][j] + cold_const-(j/XPIX)*(cold_const*0.8)
+                else:
+                    cold_map[i][j] = cold_map[i][j] + cold_const-((YPIX-j)/YPIX)*(cold_const*0.8)         
     return cold_map
 
 
 def GenerateMap(height_map, moisture_map, cold_map):
     pygame.init()
-    pygame.mixer.init()
-    #pygame.mixer.music.load(MUSIC)
-    #pygame.mixer.music.set_volume(0.1)
-    #pygame.mixer.music.play(-1)
     base_size = (XPIX, YPIX)
-    current_size = (9*XPIX, 9*YPIX)
-    screen = pygame.display.set_mode(current_size)
+    current_size = (18*XPIX, 18*YPIX)
+    screen = pygame.Surface(current_size)
+    #screen = pygame.display.set_mode(current_size)
     pygame.display.set_caption('Proceduralnie wygenerowane miasto')
-    #icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
     icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     if CITY_TYPE == 'grid':
         height_map = cg.GenerateCity1(height_map, base_size)
+    MC.set_multiplier(18)
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'voronoi':
         area = voi.getRandomArea(current_size)
@@ -78,24 +83,23 @@ def GenerateMap(height_map, moisture_map, cold_map):
         pressed = pygame.key.get_pressed()
         
         if event.type == pygame.QUIT:
-            pygame.mixer.music.fadeout(300)
             running = False
             DisplayGUI()
         if pressed[pygame.K_UP]:
             if (y_offset < 0):
-                y_offset += 1
+                y_offset += 3
                 scrollY(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_DOWN]:
             if (y_offset > -current_size[1]+900):
-                y_offset -= 1
+                y_offset -= 3
                 scrollY(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_LEFT]:
             if (x_offset < 0):
-                x_offset += 1
+                x_offset += 3
                 scrollX(screen, img, x_offset, y_offset)
         elif pressed[pygame.K_RIGHT]:
             if (x_offset > -current_size[0]+900):
-                x_offset -= 1
+                x_offset -= 3
                 scrollX(screen, img, x_offset, y_offset)
         pygame.display.update()
         
@@ -120,9 +124,9 @@ def DisplayGUI():
     RIVER = 'none'
     COLD = 'none'
     MUSIC = ''
-    COLD_STR = 'weak'
+    COLD_STR = 'none'
     FILENAME = 'Map.bmp'
-    XPIX, YPIX = 50, 50
+    XPIX, YPIX = 150, 150
     CITY_TYPE = 'none'
     
     def set_file_name(filename):
@@ -158,29 +162,29 @@ def DisplayGUI():
         if 'x' in value:
             X, Y = value.split('x')
         else:
-            XPIX = 50
-            YPIX = 50
+            XPIX = 150
+            YPIX = 150
             return XPIX, YPIX
 
         if X == '' or Y == '':
-            XPIX = 50
-            YPIX = 50
+            XPIX = 150
+            YPIX = 150
             return XPIX, YPIX
         
-        elif int(X) < 50:
-            XPIX = 50
-        elif int(Y) < 50:
-            YPIX = 50
+        elif int(X) < 150:
+            XPIX = 150
+        elif int(Y) < 150:
+            YPIX = 150
         else:
             XPIX = int(X)
             YPIX = int(Y)
 
     def setting_menu_options():
         mainmenu._open(setting_values)
-
+        
+    # Okienko menu
     pygame.init()
-    pygame.display.set_caption("Proceduralna generacja miasta v0.0.3")
-    #icon = pygame.image.load('Procedural_City_Generation/Ikona.png')
+    pygame.display.set_caption("Proceduralna generacja miasta")
     icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
     surface = pygame.display.set_mode((800, 500))
@@ -198,17 +202,17 @@ def DisplayGUI():
                                  ('Amazon Forest', 'big_forest'), ('Sahara', 'desert'),
                                  ('Louisiana', 'swamp')], onchange=set_terrain)
     setting_values.add.text_input(
-        'Map size X/Y (max 600x400): ', default='50x50', maxchar=7, onchange=set_map_size)
+        'Map size (Input X/Y): ', default='150x150', maxchar=7, onchange=set_map_size)
 
-    setting_values.add.selector('River type :',
+    setting_values.add.selector('River type: ',
                                 [('None', 'none'), ('Perlin Worms', 'perlin'), ('Gradient Descent', 'grad_desc')], onchange=set_river_type)
 
-    setting_values.add.selector('Cold spread :',
-                                [('None', 'none'), ('North Pole', 'north_pole'), ('South Pole', 'south_pole')], onchange=set_cold_spread_type)
+    setting_values.add.selector('Cold spread: ',
+                                [('None', 'none'), ('North Pole', 'north_pole'), ('South Pole', 'south_pole'), ('Bipolar', 'bipolar'), ('Central', 'central')], onchange=set_cold_spread_type)
 
-    setting_values.add.selector('Cold power :',
-                                [('Weak', 'weak'), ('Medium', 'medium'), ('Strong', 'strong')], onchange=set_cold_strenght)
-    setting_values.add.selector('City Type :',
+    setting_values.add.selector('Cold power: ',
+                                [('None', 'none'), ('Weak', 'weak'), ('Medium', 'medium'), ('Strong', 'strong')], onchange=set_cold_strenght)
+    setting_values.add.selector('City Type: ',
                                 [('None', 'none'), ('Fixed', 'fixed'), ('Grid', 'grid'), ('Voronoi', 'voronoi')], onchange=set_city_type)
 
 
@@ -230,34 +234,26 @@ def DisplayGUI():
                 if progress.get_value() == 100:
                     pygame.time.set_timer(update_loading, 0)
                     progress.set_value(0)
-
                     # Wczytywanie i generowanie danych
                     height_map = ng.GenerateData(2, 1, 1.5, XPIX, YPIX)
+                    helper_height_map = terrains.MakeMountains(height_map)
                     moisture_map = ng.GenerateData(2, 0.5, 1, XPIX, YPIX)
-                    cold_map = GenerateColdMap(height_map, COLD, COLD_STR)
-
+                    cold_map = GenerateColdMap(helper_height_map, COLD, COLD_STR)
                     # Generuję mapę wysokości, maskę wilgotności i zimna
                     if TERRAIN == 'mountains':
                         height_map = terrains.MakeMountains(height_map)
-                        MUSIC = "Music/mountains.mp3"
                     if TERRAIN == 'plains':
                         height_map = terrains.MakeLowlands(height_map)
-                        MUSIC = 'Music/plains.mp3'
                     if TERRAIN == 'island':
                         height_map = terrains.MakeIsland(height_map, XPIX, YPIX)
-                        MUSIC = 'Music/island.mp3'
                     if TERRAIN == 'many_islands':
                         height_map = terrains.MakeIslands(height_map)
-                        MUSIC = "Music/many_islands.mp3"
                     if TERRAIN == 'big_forest':
                         height_map, moisture_map = terrains.MakeBigForest(height_map, moisture_map)
-                        MUSIC = "Music/big_forest.mp3"
                     if TERRAIN == 'desert':
                         height_map, moisture_map = terrains.MakeDesert(height_map, moisture_map)
-                        MUSIC = "Music/desert.mp3"
                     if TERRAIN == 'swamp':
                         height_map, moisture_map = terrains.MakeSwamp(height_map, moisture_map)
-                        MUSIC = "Music/swamp.mp3"
                     if RIVER == 'perlin':
                         height_map = rg.PerlinRiver(height_map, XPIX, YPIX)
                     if RIVER == 'grad_desc':

@@ -21,9 +21,9 @@ def set_moisturemap(moisture):
     moisturemap = moisture
 
 def DrawLine(surface, x_start, y_start, x_end, y_end):
-    road_color = (0, 0, 0)        
+    road_color = (0, 0, 0)    
     # Rysowanie linii
-    pygame.draw.line(surface, road_color, (x_start, y_start), (x_end, y_end))
+    pygame.draw.line(surface, road_color, (x_start, y_start), (x_end, y_end), 3)
 # funkcja do testowania 
 def DrawNode(surface, x, y, i):
     if i == -1:
@@ -96,27 +96,26 @@ def LSystemCity(screen, height_map, moisture_map, base_size, current_size):
                     x_start = x_end
                     y_start = y_end
                 # Wszystkie inne przypadki
-                else:
-                    #while check == True and checks < 30:         
-                        radian = math.pi/(180/base_degree)
-                        x_len = round(base_length*math.cos(radian))
-                        y_len = round(base_length*math.sin(radian))
-                        if x_end < base_size[0]*multiplier and y_end < base_size[1]*multiplier and x_end > 0 and y_end > 0 and height_map[math.floor(x_end/multiplier)][math.floor(y_end/multiplier)] > 0.35:
-                            x_end = round(x_start + x_len)
-                            y_end = round(y_start + y_len)
-                            DrawLine(screen, x_start, y_start, x_end, y_end)
-                            DrawNode(screen, x_end, y_end, i)
+                else:        
+                    radian = math.pi/(180/base_degree)
+                    x_len = round(base_length*math.cos(radian))
+                    y_len = round(base_length*math.sin(radian))
+                    if x_end < base_size[0]*multiplier and y_end < base_size[1]*multiplier and x_end > 0 and y_end > 0 and height_map[math.floor(x_end/multiplier)][math.floor(y_end/multiplier)] > 0.35:
+                        x_end = round(x_start + x_len)
+                        y_end = round(y_start + y_len)
+                        DrawLine(screen, x_start, y_start, x_end, y_end)
+                        DrawNode(screen, x_end, y_end, i)
+                        nodes_positions.append((x_start, y_start))
+                        for j in range (complexity_level-3*i+3):
+                            x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
+                            DrawNode(screen, x_new, y_new, i)
                             nodes_positions.append((x_start, y_start))
-                            for j in range (complexity_level-3*i+3):
-                                x_new, y_new = GenerateRandomNode(x_end, y_end, base_length*pow(2,i))
-                                DrawNode(screen, x_new, y_new, i)
-                                nodes_positions.append((x_start, y_start))
-                            x_start = x_end
-                            y_start = y_end
-                            check = False
-                        else:
-                            base_degree += 35
-                            checks += 1
+                        x_start = x_end
+                        y_start = y_end
+                        check = False
+                    else:
+                        base_degree += 35
+                        checks += 1
             elif char == "+":
                 base_degree += random.randint(20, 70)
             elif char == "-":
