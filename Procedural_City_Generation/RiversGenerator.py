@@ -20,14 +20,11 @@ def PerlinRiver(height_map, xpix, ypix):
 
 def makeRiver(moisture,height):
     number=random.randint(int(math.sqrt(len(moisture)*len(moisture[0]))/5),int(math.sqrt(len(moisture)*len(moisture[0]))/4))
-    print(number)
     for x in range (number):
         i=random.randint(1,len(moisture)-1)
         j=random.randint(1,len(moisture[0])-1)
         moisture[i][j]=0.9
         makeLine(0,i,j,len(moisture)-1,len(moisture[0]),moisture,height)
-    #for x in range(100):
-    #    print(moisture[x])
     return  moisture, height
 
 def stop(i , j, maxX,maxY):
@@ -112,11 +109,9 @@ def makeLine(x,i,j,maxX,maxY,moisture,height):
             prevI, prevJ = i, j
             i, j=direction(i, j, height,VI,VJ,maxX,maxY)
             prevI, prevJ = i, j
-            #makeLine(x,newI,newJ,max,moisture,height,newI-i,newJ-j)
             if(stop(i,j,maxX,maxY)==True):
                 break
         except:
-            print("e100")
             break
 
 def checkDirection(x,i, j,maxX,maxY,height):

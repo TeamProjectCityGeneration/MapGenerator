@@ -12,7 +12,10 @@ def GenerateData(base_octave, base_frequency, depth, xpix, ypix):
         for j in range(ypix):
             noise_val = 0
             for k in range(len(octaves_tab)):
-                noise_val += octaves_tab[k]([base_frequency *i/xpix, base_frequency*j/ypix])
+                if xpix > ypix:
+                    noise_val += octaves_tab[k]([base_frequency *i/ypix, base_frequency*j/ypix])
+                else:
+                    noise_val += octaves_tab[k]([base_frequency *i/xpix, base_frequency*j/xpix])
             row.append(noise_val)
         pic.append(row)
     pic = pow(tr.NormalizeData(pic, 0, 1), depth)
