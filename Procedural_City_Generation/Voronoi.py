@@ -71,13 +71,15 @@ def find(item,array):
 
 def getRandomArea(max):
     area=[]
+    areas=[]
     nodes=random.randint(3,15)
     for i in range(nodes):
         x = random.randint(1,max[0])
         y = random.randint(1,max[1])
         point=(x,y)
         area.append(point)
-    return area
+    areas.append(area)
+    return areas
 
 def getMiddleOfRegion(vor,height,area,w,h):
     buildings=[]
