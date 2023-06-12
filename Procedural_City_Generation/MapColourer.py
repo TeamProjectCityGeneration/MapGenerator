@@ -166,7 +166,7 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
             collumn_mid_pixel += MULTIPLIER
         row_mid_pixel += MULTIPLIER
               
-def DrawTree(pygame_screen, height_map, moisture_map, nodes_positions):
+def DrawTree(pygame_screen, height_map, moisture_map, nodes_positions, has_city):
     upper = math.ceil(MULTIPLIER/2)
     row_pixel = upper
     for i in range(len(height_map[0])):  # X

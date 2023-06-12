@@ -116,18 +116,13 @@ def GenerateCity(screen, height_map, moisture_map, base_size, current_size):
     
     # Budynki
           
-    DrawPolygonAndCity((nodes_positions[0], nodes_positions[1], nodes_positions[2], nodes_positions[3]))
-    DrawPolygonAndCity((nodes_positions[4], nodes_positions[0], nodes_positions[3], nodes_positions[5]))
-    DrawPolygonAndCity((nodes_positions[1], nodes_positions[6], nodes_positions[7], nodes_positions[2]))
-    DrawPolygonAndCity((nodes_positions[8], nodes_positions[9], nodes_positions[1], nodes_positions[0]))
-    DrawPolygonAndCity((nodes_positions[3], nodes_positions[2], nodes_positions[11], nodes_positions[10]))
+    DrawPolygonAndCity((nodes_positions[0], nodes_positions[1], nodes_positions[2], nodes_positions[3]), (nodes_positions[4], nodes_positions[0], nodes_positions[3], nodes_positions[5]),
+                       (nodes_positions[1], nodes_positions[6], nodes_positions[7], nodes_positions[2]),(nodes_positions[8], nodes_positions[9], nodes_positions[1], nodes_positions[0]),
+                       (nodes_positions[3], nodes_positions[2], nodes_positions[11], nodes_positions[10]), (nodes_positions[8], nodes_positions[0], nodes_positions[4]),
+                       (nodes_positions[9], nodes_positions[6], nodes_positions[1]), (nodes_positions[2], nodes_positions[7], nodes_positions[11]), (nodes_positions[5], nodes_positions[3], nodes_positions[10])
+                      )
     
-    DrawPolygonAndCity((nodes_positions[8], nodes_positions[0], nodes_positions[4]))
-    DrawPolygonAndCity((nodes_positions[9], nodes_positions[6], nodes_positions[1]))
-    DrawPolygonAndCity((nodes_positions[2], nodes_positions[7], nodes_positions[11]))
-    DrawPolygonAndCity((nodes_positions[5], nodes_positions[3], nodes_positions[10]))
-    
-    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions)
+    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions, True)
     
     # Ulice
     

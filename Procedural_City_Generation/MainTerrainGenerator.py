@@ -63,7 +63,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
     MC.set_multiplier(18)
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'none':
-        MC.DrawTree(screen, height_map, moisture_map)
+        MC.DrawTree(screen, height_map, moisture_map, False)
     if CITY_TYPE == 'grid':
         height_map = cg.GenerateCity1(height_map, base_size)
     if CITY_TYPE == 'voronoi':
