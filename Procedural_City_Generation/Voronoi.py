@@ -56,12 +56,11 @@ def inequality(point,linearBigger,linearSmaller):
 
 
 def inShape(nodes,pointA,pointB):
-    poligon=Polygon(nodes)
-    if(poligon.contains(Point(pointA))==False):
-        return False
-    if(poligon.contains(Point(pointB))==False):
-        return False
-    return True
+    for figure in nodes:
+        poligon=Polygon(figure)
+        if(poligon.contains(Point(pointA))==True and poligon.contains(Point(pointB))==True):
+            return True  
+    return False
 
 def find(item,array):
     for x in array:
@@ -91,10 +90,15 @@ def getMiddleOfRegion(vor,height,area,w,h):
 def checkPoint(height,area,w,h,point):
     skalarW=w/len(height)
     skalarH=h/len(height[0])
-    poligon=Polygon(area)
+    log=False
     if(abs(point[0])>=w or abs(point[1])>=h):
         return False
-    if(poligon.contains(Point(point))==False):
+    for figure in area:
+        poligon=Polygon(figure)
+        if(poligon.contains(Point(point))==True):
+            log = True
+            break
+    if(log==False):
         return False
     if(height[int(point[0]/skalarW),int(point[1]/skalarH)]>=0.33  and height[int(point[0]/skalarW),int(point[1]/skalarH)]<=0.8):
         return True
