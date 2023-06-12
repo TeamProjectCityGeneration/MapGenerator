@@ -24,8 +24,6 @@ def __generate_voronoi(w,h):
 def draw_voronoi(pygame_surface,height,area):
     w, h = pygame_surface.get_size()
     vor = __generate_voronoi(w,h)
-    print(w," w, h", h)
-    print(len(height)," array ",len(height[0]))
     for indx_pair in vor.ridge_vertices:
         if -1 not in indx_pair:
             start_pos = vor.vertices[indx_pair[0]]
