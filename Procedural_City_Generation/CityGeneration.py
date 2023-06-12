@@ -1,9 +1,9 @@
 import pygame
 import math
 import random
-import numpy as np
 import Voronoi as vn
 import MapColourer as mc
+import Grid as gd
 
 surface = 0
 heightmap = 0
@@ -22,8 +22,7 @@ def set_moisturemap(moisture):
 
 def DrawLine(surface, x_start, y_start, x_end, y_end):
     road_color = (0, 0, 0)    
-    # Rysowanie linii
-    pygame.draw.line(surface, road_color, (x_start, y_start), (x_end, y_end), 3)
+    pygame.draw.line(surface, road_color, (x_start, y_start), (x_end, y_end), 6)
 # funkcja do testowania 
 def DrawNode(surface, x, y, i):
     if i == -1:
@@ -37,8 +36,137 @@ def DrawNode(surface, x, y, i):
     if i == 3:
         node_color = (255, 0, 255)
     # Rysowanie nodeów (do testowania)
-    pygame.draw.circle(surface, node_color, (x, y), 2)
+    pygame.draw.circle(surface, node_color, (x, y), 10)
+    
+
+def GenerateCity(screen, height_map, moisture_map, base_size, current_size):
+    set_heightmap(height_map)
+    set_surface(screen)
+    set_moisturemap(moisture_map)
+    nodes_positions = []
+    multiplier = current_size[0]/base_size[0]
+    while True:
+        top_left_x = random.randint(base_size[0]/5, base_size[0]-base_size[0]/5)
+        top_left_y = random.randint(base_size[1]/5, base_size[1]-base_size[1]/5)
+        if height_map[top_left_x][top_left_y] > 0.35:
+            top_left_x *= multiplier
+            top_left_y *= multiplier
+            nodes_positions.append((top_left_x,top_left_y))
+            print("top-left", (top_left_x,top_left_y))
+            break
+    i = 0
+    # Main district
+    top_right_x = random.randint(top_left_x+100, top_left_x+250)
+    top_right_y = random.randint(top_left_y-50, top_left_y+50)
+    nodes_positions.append((top_right_x,top_right_y))
+    down_right_x = random.randint(top_left_x+100, top_left_x+250)
+    down_right_y = random.randint(top_left_y+100, top_left_y+250)
+    nodes_positions.append((down_right_x,down_right_y))
+    down_left_x = random.randint(top_left_x-50, top_left_x+50)
+    down_left_y = random.randint(top_left_y+100, top_left_y+250)
+    nodes_positions.append((down_left_x,down_left_y))
+    # Left district
+    top_left_x = random.randint(top_left_x-250, top_left_x-100)
+    top_left_y = random.randint(top_left_y-50, top_left_y+50)
+    nodes_positions.append((top_left_x,top_left_y))
+    down_left_x = random.randint(top_left_x-50, top_left_x+50)
+    down_left_y = random.randint(top_left_y+100, top_left_y+250)
+    nodes_positions.append((down_left_x,down_left_y))
+    # Right district
+    top_right_x = random.randint(nodes_positions[1][0]+100, nodes_positions[1][0]+250)
+    top_right_y = random.randint(nodes_positions[1][1]-50, nodes_positions[1][1]+50)
+    nodes_positions.append((top_right_x,top_right_y))
+    down_right_x = random.randint(nodes_positions[2][0]+100, nodes_positions[2][0]+250)
+    down_right_y = random.randint(nodes_positions[2][1]-50, nodes_positions[2][1]+50)
+    nodes_positions.append((down_right_x,down_right_y))
+    # Upper district
+    top_left_x = random.randint(nodes_positions[0][0]-50, nodes_positions[0][0]+50)
+    top_left_y = random.randint(nodes_positions[0][1]-250, nodes_positions[0][1]-100)
+    nodes_positions.append((top_left_x,top_left_y))
+    top_right_x = random.randint(nodes_positions[1][0]-50, nodes_positions[1][0]+50)
+    top_right_y = random.randint(nodes_positions[1][1]-250, nodes_positions[1][1]-100)
+    nodes_positions.append((top_right_x,top_right_y))
+    # Lower district
+    down_left_x = random.randint(nodes_positions[3][0]-50, nodes_positions[3][0]+50)
+    down_left_y = random.randint(nodes_positions[3][1]+100, nodes_positions[3][1]+250)
+    nodes_positions.append((down_left_x,down_left_y))
+    down_right_x = random.randint(nodes_positions[2][0]-50, nodes_positions[2][0]+50)
+    down_right_y = random.randint(nodes_positions[2][1]+100, nodes_positions[2][1]+250)
+    nodes_positions.append((down_right_x,down_right_y))
+    # Top-left district
+    #top_left_x = random.randint(nodes_positions[4][0], nodes_positions[8][0])
+    #top_left_y = random.randint(nodes_positions[8][1], nodes_positions[4][1])
+    #nodes_positions.append((top_left_x,top_left_y))
+    # Top-right district
+    #top_right_x = random.randint(nodes_positions[9][0], nodes_positions[6][0])
+    #top_right_y = random.randint(nodes_positions[9][1], nodes_positions[6][1])
+    #nodes_positions.append((top_right_x,top_right_y))
+    # Down-left district
+    #down_left_x = random.randint(nodes_positions[5][0], nodes_positions[10][0])
+    #down_left_y = random.randint(nodes_positions[5][1], nodes_positions[10][1])
+    #nodes_positions.append((down_left_x,down_left_y))
+    # Down-right district
+    #down_right_x = random.randint(nodes_positions[11][0], nodes_positions[7][0])
+    #down_right_y = random.randint(nodes_positions[7][1], nodes_positions[11][1])
+    #nodes_positions.append((down_right_x,down_right_y))
+    
+    while i < 12:
+        DrawNode(screen, nodes_positions[i][0], nodes_positions[i][1], 1)
+        i = i+1
+    
+    # Budynki
+          
+    DrawPolygonAndCity((nodes_positions[0], nodes_positions[1], nodes_positions[2], nodes_positions[3]))
+    DrawPolygonAndCity((nodes_positions[4], nodes_positions[0], nodes_positions[3], nodes_positions[5]))
+    DrawPolygonAndCity((nodes_positions[1], nodes_positions[6], nodes_positions[7], nodes_positions[2]))
+    DrawPolygonAndCity((nodes_positions[8], nodes_positions[9], nodes_positions[1], nodes_positions[0]))
+    DrawPolygonAndCity((nodes_positions[3], nodes_positions[2], nodes_positions[11], nodes_positions[10]))
+    
+    DrawPolygonAndCity((nodes_positions[8], nodes_positions[0], nodes_positions[4]))
+    DrawPolygonAndCity((nodes_positions[9], nodes_positions[6], nodes_positions[1]))
+    DrawPolygonAndCity((nodes_positions[2], nodes_positions[7], nodes_positions[11]))
+    DrawPolygonAndCity((nodes_positions[5], nodes_positions[3], nodes_positions[10]))
+    
+    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions)
+    
+    # Ulice
+    
+    DrawLine(surface, nodes_positions[0][0], nodes_positions[0][1], nodes_positions[1][0], nodes_positions[1][1])
+    DrawLine(surface, nodes_positions[1][0], nodes_positions[1][1], nodes_positions[2][0], nodes_positions[2][1])
+    DrawLine(surface, nodes_positions[2][0], nodes_positions[2][1], nodes_positions[3][0], nodes_positions[3][1])
+    DrawLine(surface, nodes_positions[0][0], nodes_positions[0][1], nodes_positions[3][0], nodes_positions[3][1])
+    
+    DrawLine(surface, nodes_positions[0][0], nodes_positions[0][1], nodes_positions[4][0], nodes_positions[4][1])
+    DrawLine(surface, nodes_positions[4][0], nodes_positions[4][1], nodes_positions[5][0], nodes_positions[5][1])
+    DrawLine(surface, nodes_positions[5][0], nodes_positions[5][1], nodes_positions[3][0], nodes_positions[3][1])
+    
+    DrawLine(surface, nodes_positions[1][0], nodes_positions[1][1], nodes_positions[6][0], nodes_positions[6][1])
+    DrawLine(surface, nodes_positions[6][0], nodes_positions[6][1], nodes_positions[7][0], nodes_positions[7][1])
+    DrawLine(surface, nodes_positions[7][0], nodes_positions[7][1], nodes_positions[2][0], nodes_positions[2][1])
+    
+    DrawLine(surface, nodes_positions[0][0], nodes_positions[0][1], nodes_positions[8][0], nodes_positions[8][1])
+    DrawLine(surface, nodes_positions[8][0], nodes_positions[8][1], nodes_positions[9][0], nodes_positions[9][1])
+    DrawLine(surface, nodes_positions[9][0], nodes_positions[9][1], nodes_positions[1][0], nodes_positions[1][1])
+    
+    DrawLine(surface, nodes_positions[3][0], nodes_positions[3][1], nodes_positions[10][0], nodes_positions[10][1])
+    DrawLine(surface, nodes_positions[10][0], nodes_positions[10][1], nodes_positions[11][0], nodes_positions[11][1])
+    DrawLine(surface, nodes_positions[11][0], nodes_positions[11][1], nodes_positions[2][0], nodes_positions[2][1])
+    
+    DrawLine(surface, nodes_positions[4][0], nodes_positions[4][1], nodes_positions[8][0], nodes_positions[8][1])
+    DrawLine(surface, nodes_positions[6][0], nodes_positions[6][1], nodes_positions[9][0], nodes_positions[9][1])
+    DrawLine(surface, nodes_positions[5][0], nodes_positions[5][1], nodes_positions[10][0], nodes_positions[10][1])
+    DrawLine(surface, nodes_positions[7][0], nodes_positions[7][1], nodes_positions[11][0], nodes_positions[11][1])
+            
         
+def DrawPolygonAndCity(nodes_positions):
+    #print(nodes_positions)
+    roll = random.randint(0, 99)
+    if roll < 1000:
+        vn.draw_voronoi(surface, heightmap, nodes_positions)
+    else:
+        gd.generate_grid(surface, nodes_positions)
+    
+'''        
 def GenerateString(rules, sentence):
     newString = ''
     for char in sentence:
@@ -56,7 +184,7 @@ def LSystemCity(screen, height_map, moisture_map, base_size, current_size):
     set_moisturemap(moisture_map)
     nodes_positions = []
     multiplier = current_size[0]/base_size[0]
-    base_length = 40
+    base_length = 80
     base_degree = 0
     while True:
         x_start = random.randint(base_size[0]/5, base_size[0]-base_size[0]/5)
@@ -131,11 +259,7 @@ def LSystemCity(screen, height_map, moisture_map, base_size, current_size):
                 pass
     DrawPolygonAndCity(nodes_positions)
     #Polygonize(nodes_positions)
-    
-def DrawPolygonAndCity(nodes_positions):
-    vn.draw_voronoi(surface, heightmap, nodes_positions)    
-    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions)
-    
+'''   
 """
 def Polygonize(nodes_positions):
     left = len(nodes_positions)
@@ -197,54 +321,3 @@ def GenerateRandomNode(x, y, radius):
     x_new = r * math.cos(degree) + x
     y_new = r * math.sin(degree) + y
     return x_new, y_new
-
-def GenerateCity1(height_map, base_size):
-    def DrawLineX(height_map, x, y):
-        for line in range(1, 10, 1):
-            if (x + line >= base_size[0]) or (x + line <= 0) or (height_map[x + line, y] < 0.33):
-                continue
-            height_map[x + line, y] = 1.02
-        return height_map
-
-    def DrawLineY(height_map, x, y):
-        for line in range(1, 10, 1):
-            if (y + line >= base_size[1]) or (y + line <= 0) or (height_map[x, y + line] < 0.33):
-                continue
-            height_map[x, y + line] = 1.02
-        return height_map
-
-    city_map = (base_size[0], base_size[1])
-    city_map = np.zeros(city_map)
-    startX = random.randint(0, base_size[0])
-    startY = random.randint(0, base_size[1])
-    iterationX, iterationY = 0, 0
-
-    while height_map[startX, startY] < 0.33:
-        startX = random.randint(0, base_size[0])
-        startY = random.randint(0, base_size[1])
-
-    for x in range(-50, 51, 10):
-        for y in range(-50, 51, 10):
-            if (startX + x <= 0) or (startX + x >= base_size[0]):
-                continue
-            if (startY + y <= 0) or (startY + y >= base_size[1]):
-                continue
-            if height_map[startX + x, startY + y] < 0.33:
-                continue
-            height_map[startX + x, startY + y] = 1.01
-
-            if x != 50:
-                if iterationX < 3:
-                    DrawLineX(height_map, startX + x, startY + y)
-                else:
-                    iterationX = 0
-            if y != 50:
-                if iterationY < 4:
-                    DrawLineY(height_map, startX + x, startY + y)
-                else:
-                    iterationY = 0
-
-            iterationX = iterationX + 1
-            iterationY = iterationY + 1
-
-    return height_map

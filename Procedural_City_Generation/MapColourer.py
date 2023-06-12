@@ -1,6 +1,8 @@
 import pygame
 import random
 import math
+import numpy
+from scipy.spatial import distance
 
 # Definicje kolorów
 DEEP_SEA = 0x0c1fb3  # Ciemnoniebieski
@@ -41,7 +43,7 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
         for j in range(len(height_map)):  # Y
             #possible_tree = random.randint(0, 99)
             # Ocean
-            print(collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower)
+            #print(collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower)
             if 0 <= height_map[j][i] < 0.15:
                 pygame.draw.rect(pygame_screen, DEEP_SEA, pygame.Rect(
                     collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower))
@@ -163,68 +165,50 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
                 #        collumn_mid_pixel, row_mid_pixel, collumn_mid_pixel, row_mid_pixel))
             collumn_mid_pixel += MULTIPLIER
         row_mid_pixel += MULTIPLIER
-        
-import numpy as np
-from scipy.spatial import distance
-        
+              
 def DrawTree(pygame_screen, height_map, moisture_map, nodes_positions):
     upper = math.ceil(MULTIPLIER/2)
-    lower = math.floor(MULTIPLIER/2)
     row_pixel = upper
-    #tree_count = 0
     for i in range(len(height_map[0])):  # X
         collumn_pixel = upper
         for j in range(len(height_map)):  # Y
             possible_tree = random.randint(0, 99)
-            point = np.array([(j*MULTIPLIER,i*MULTIPLIER)])
+            point = numpy.array([(j*MULTIPLIER,i*MULTIPLIER)])
             dist_array = distance.cdist(nodes_positions,point).min(axis=1)
-            min = np.amin(dist_array)
-            #print(min)           
+            min = numpy.amin(dist_array)
             if min > 100:
                 if 0.33 <= height_map[j][i] < 0.40:
                     if moisture_map[j][i] < 0.5:
                         if possible_tree >= 98:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if moisture_map[j][i] >= 0.5:
                         if possible_tree >= 75:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                 if 0.40 <= height_map[j][i] < 0.70:
                     if 0.25 <= moisture_map[j][i] < 0.5:
                         if possible_tree >= 93:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if 0.5 <= moisture_map[j][i] < 0.55:
                         if possible_tree >= 70:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if 0.55 <= moisture_map[j][i] < 0.8:
                         if possible_tree >= 40:   
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if moisture_map[j][i] >= 0.8:
                         if possible_tree >= 80: 
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
-                            #print(collumn_pixel, row_pixel)
-                            #tree_count += 1
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                 if 0.70 <= height_map[j][i] < 0.80:
                     if moisture_map[j][i] < 0.55:
                         if possible_tree >= 95:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if 0.55 <= moisture_map[j][i] < 0.6:
                         if possible_tree >= 77:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                     if moisture_map[j][i] >= 0.6:
                         if possible_tree >= 60:
-                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
+                            pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
                 if height_map[j][i] >= 0.80:
                     if possible_tree >= 99:
-                        pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 3, 3))
+                        pygame.draw.rect(pygame_screen, TREE, pygame.Rect(collumn_pixel, row_pixel, 6, 6))
             collumn_pixel += MULTIPLIER
         row_pixel += MULTIPLIER

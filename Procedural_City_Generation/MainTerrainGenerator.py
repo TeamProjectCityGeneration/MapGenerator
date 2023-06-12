@@ -11,6 +11,7 @@ import NoiseGenerator as ng
 import CityGeneration as cg
 import random
 import Voronoi as voi
+import MapColourer as MC
 
 # gdzie pokazywać na ekranie będą się okna
 Width = GetSystemMetrics(0)
@@ -59,16 +60,17 @@ def GenerateMap(height_map, moisture_map, cold_map):
     pygame.display.set_caption('Proceduralnie wygenerowane miasto')
     icon = pygame.image.load('Ikona.png')
     pygame.display.set_icon(icon)
-    if CITY_TYPE == 'grid':
-        height_map = cg.GenerateCity1(height_map, base_size)
     MC.set_multiplier(18)
     MC.colorize(height_map, moisture_map, cold_map, screen)
+    if CITY_TYPE == 'none':
+        MC.DrawTree(screen, height_map, moisture_map)
+    if CITY_TYPE == 'grid':
+        height_map = cg.GenerateCity1(height_map, base_size)
     if CITY_TYPE == 'voronoi':
         area = voi.getRandomArea(current_size)
-        surface=pygame.display.get_surface()
-        voi.draw_voronoi(surface,height_map,area)
+        voi.draw_voronoi(screen,height_map,area)
     if CITY_TYPE == 'fixed':
-        cg.LSystemCity(screen, height_map, moisture_map, base_size, current_size)
+        cg.GenerateCity(screen, height_map, moisture_map, base_size, current_size)
     pygame.image.save(screen,'Map.bmp')
     screen = pygame.display.set_mode((900,900))
     img = pygame.image.load('Map.bmp')
