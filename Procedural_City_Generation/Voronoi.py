@@ -10,8 +10,9 @@ import HomeCreator as hc
 def __generate_voronoi(w,h):
     #denstity = 9999
     #denstity = 48000
-    denstity = 34000
-
+    #denstity = 32000
+    #print("P=",w*h)
+    denstity=int(w*h/500)
     point_arr = numpy.zeros([denstity, 2], numpy.uint16)
 
     for i in range(denstity):
@@ -109,3 +110,12 @@ def checkPoint(height,area,w,h,point):
 def drawBuildings(points,surface):
     for point in points:
         hc.setBuildingOnPoint(point,surface)
+
+def avg(array):
+    point=[0,0]
+    for i in array:
+        point[0]=point[0]+i[0]
+        point[1]=point[1]+i[1]
+    point[0]=point[0]/len(array)
+    point[1]=point[1]/len(array)
+    return point
