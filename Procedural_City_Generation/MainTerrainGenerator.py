@@ -63,12 +63,7 @@ def GenerateMap(height_map, moisture_map, cold_map):
     MC.set_multiplier(18)
     MC.colorize(height_map, moisture_map, cold_map, screen)
     if CITY_TYPE == 'none':
-        MC.DrawTree(screen, height_map, moisture_map, False)
-    if CITY_TYPE == 'grid':
-        height_map = cg.GenerateCity1(height_map, base_size)
-    if CITY_TYPE == 'voronoi':
-        area = voi.getRandomArea(current_size)
-        voi.draw_voronoi(screen,height_map,area)
+        MC.DrawTree(screen, height_map, moisture_map, [])
     if CITY_TYPE == 'fixed':
         cg.GenerateCity(screen, height_map, moisture_map, base_size, current_size)
     pygame.image.save(screen,'Map.bmp')
@@ -215,7 +210,7 @@ def DisplayGUI():
     setting_values.add.selector('Cold power: ',
                                 [('None', 'none'), ('Weak', 'weak'), ('Medium', 'medium'), ('Strong', 'strong')], onchange=set_cold_strenght)
     setting_values.add.selector('City Type: ',
-                                [('None', 'none'), ('Fixed', 'fixed'), ('Grid', 'grid'), ('Voronoi', 'voronoi')], onchange=set_city_type)
+                                [('None', 'none'), ('Fixed', 'fixed')], onchange=set_city_type)
 
 
     loading = pygame_menu.Menu(

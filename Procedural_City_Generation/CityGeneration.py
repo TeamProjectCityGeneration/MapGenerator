@@ -110,9 +110,9 @@ def GenerateCity(screen, height_map, moisture_map, base_size, current_size):
     #down_right_y = random.randint(nodes_positions[7][1], nodes_positions[11][1])
     #nodes_positions.append((down_right_x,down_right_y))
     
-    while i < 12:
-        DrawNode(screen, nodes_positions[i][0], nodes_positions[i][1], 1)
-        i = i+1
+    #while i < 12:
+    #    DrawNode(screen, nodes_positions[i][0], nodes_positions[i][1], 1)
+    #    i = i+1
     
     # Budynki
           
@@ -122,7 +122,7 @@ def GenerateCity(screen, height_map, moisture_map, base_size, current_size):
                        (nodes_positions[9], nodes_positions[6], nodes_positions[1]), (nodes_positions[2], nodes_positions[7], nodes_positions[11]), (nodes_positions[5], nodes_positions[3], nodes_positions[10]))
                       )
     
-    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions, True)
+    mc.DrawTree(surface, heightmap, moisturemap, nodes_positions)
     
     # Ulice
     
@@ -154,7 +154,6 @@ def GenerateCity(screen, height_map, moisture_map, base_size, current_size):
             
         
 def DrawPolygonAndCity(nodes_positions):
-    #print(nodes_positions)
     roll = random.randint(0, 99)
     if roll < 1000:
         vn.draw_voronoi(surface, heightmap, nodes_positions)

@@ -44,13 +44,13 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
             #possible_tree = random.randint(0, 99)
             # Ocean
             #print(collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower)
-            if 0 <= height_map[j][i] < 0.15:
+            if 0 <= height_map[j][i] < 0.1:
                 pygame.draw.rect(pygame_screen, DEEP_SEA, pygame.Rect(
                     collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower))
                 if cold_map[j][i] > 0.9:
                     pygame.draw.rect(pygame_screen, FROZEN_WATER, pygame.Rect(
                         collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower))
-            if 0.15 <= height_map[j][i] < 0.33:
+            if 0.1 <= height_map[j][i] < 0.33:
                 if moisture_map[j][i] < 0.7:
                     pygame.draw.rect(pygame_screen, SHALLOW_SEA, pygame.Rect(
                         collumn_mid_pixel-lower, row_mid_pixel-lower, collumn_mid_pixel+lower, row_mid_pixel+lower))
@@ -166,16 +166,18 @@ def colorize(height_map, moisture_map, cold_map, pygame_screen):
             collumn_mid_pixel += MULTIPLIER
         row_mid_pixel += MULTIPLIER
               
-def DrawTree(pygame_screen, height_map, moisture_map, nodes_positions, has_city):
+def DrawTree(pygame_screen, height_map, moisture_map, nodes_positions):
     upper = math.ceil(MULTIPLIER/2)
     row_pixel = upper
+    min = 200
     for i in range(len(height_map[0])):  # X
         collumn_pixel = upper
         for j in range(len(height_map)):  # Y
             possible_tree = random.randint(0, 99)
-            point = numpy.array([(j*MULTIPLIER,i*MULTIPLIER)])
-            dist_array = distance.cdist(nodes_positions,point).min(axis=1)
-            min = numpy.amin(dist_array)
+            if nodes_positions != []:
+                point = numpy.array([(j*MULTIPLIER,i*MULTIPLIER)])
+                dist_array = distance.cdist(nodes_positions,point).min(axis=1)
+                min = numpy.amin(dist_array)
             if min > 100:
                 if 0.33 <= height_map[j][i] < 0.40:
                     if moisture_map[j][i] < 0.5:

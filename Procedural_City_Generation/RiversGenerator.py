@@ -104,7 +104,7 @@ def makeLine(x,i,j,maxX,maxY,moisture,height):
     for k in range(number):
         try:
             height[i][j]=0.1
-            moisture[i][j]=0.9
+            #moisture[i][j]=0.9
             VI, VJ = i-prevI,j-prevJ
             prevI, prevJ = i, j
             i, j=direction(i, j, height,VI,VJ,maxX,maxY)
